@@ -5,64 +5,1166 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Study Triage</title>
   <style>
-    /* STYLES COMING IN STAGE 2 */
-    body { margin: 0; background: #0F1117; color: white; 
-           font-family: sans-serif; }
-    .view { display: none; padding: 20px; }
-    .view.active { display: block; }
+    /* ============================================
+   STUDY TRIAGE — DESIGN SYSTEM
+   Colour Palette:
+   - Background:    #0F1117
+   - Card surface:  #1A1D27
+   - Accent blue:   #4F8EF7
+   - Success green: #2DD4A0
+   - Warning amber: #F5A623
+   - Critical red:  #F75C5C
+   - Text primary:  #FFFFFF
+   - Text secondary:#8B8FA8
+   - Border:        #2A2D3A
+============================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #0F1117;
+  color: #FFFFFF;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* ========================
+   VIEWS
+======================== */
+.view {
+  display: none;
+  min-height: 100vh;
+}
+
+.view.active {
+  display: block;
+}
+
+/* ========================
+   NAV BAR
+======================== */
+.navbar {
+  background: #1A1D27;
+  border-bottom: 1px solid #2A2D3A;
+  padding: 0 32px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar-logo {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #4F8EF7, #2DD4A0);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: white;
+}
+
+.navbar-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: -0.3px;
+}
+
+.navbar-title span {
+  color: #4F8EF7;
+}
+
+.navbar-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.nav-btn {
+  background: transparent;
+  border: 1px solid #2A2D3A;
+  color: #8B8FA8;
+  padding: 7px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.nav-btn:hover {
+  background: #2A2D3A;
+  color: #FFFFFF;
+}
+
+.nav-btn.active {
+  background: #4F8EF7;
+  border-color: #4F8EF7;
+  color: #FFFFFF;
+}
+
+/* ========================
+   PAGE CONTAINER
+======================== */
+.page-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+/* ========================
+   PAGE HEADER
+======================== */
+.page-header {
+  margin-bottom: 32px;
+}
+
+.page-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+}
+
+.page-header p {
+  color: #8B8FA8;
+  font-size: 15px;
+}
+
+/* ========================
+   CARDS
+======================== */
+.card {
+  background: #1A1D27;
+  border: 1px solid #2A2D3A;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.card-sm {
+  background: #1A1D27;
+  border: 1px solid #2A2D3A;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+/* Subject card with left accent strip */
+.subject-card {
+  background: #1A1D27;
+  border: 1px solid #2A2D3A;
+  border-radius: 12px;
+  padding: 20px 20px 20px 24px;
+  margin-bottom: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.subject-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+}
+
+.subject-card.risk-red::before   { background: #F75C5C; }
+.subject-card.risk-amber::before { background: #F5A623; }
+.subject-card.risk-green::before { background: #2DD4A0; }
+
+.subject-card:hover {
+  border-color: #4F8EF7;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(79, 142, 247, 0.1);
+}
+
+.subject-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.subject-card-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.subject-card-meta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.meta-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #8B8FA8;
+}
+
+.meta-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+/* ========================
+   BADGES / PILLS
+======================== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-red   { background: rgba(247,92,92,0.15);   color: #F75C5C; }
+.badge-amber { background: rgba(245,166,35,0.15);  color: #F5A623; }
+.badge-green { background: rgba(45,212,160,0.15);  color: #2DD4A0; }
+.badge-blue  { background: rgba(79,142,247,0.15);  color: #4F8EF7; }
+.badge-gray  { background: rgba(139,143,168,0.15); color: #8B8FA8; }
+
+/* ========================
+   BUTTONS
+======================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: #4F8EF7;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #3a7be8;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #8B8FA8;
+  border: 1px solid #2A2D3A;
+}
+
+.btn-secondary:hover {
+  background: #2A2D3A;
+  color: #FFFFFF;
+}
+
+.btn-danger {
+  background: transparent;
+  color: #F75C5C;
+  border: 1px solid rgba(247,92,92,0.3);
+}
+
+.btn-danger:hover {
+  background: rgba(247,92,92,0.1);
+}
+
+.btn-success {
+  background: #2DD4A0;
+  color: #0F1117;
+}
+
+.btn-success:hover {
+  background: #25b889;
+  transform: translateY(-1px);
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.btn-full {
+  width: 100%;
+  justify-content: center;
+}
+
+/* ========================
+   FORM ELEMENTS
+======================== */
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #8B8FA8;
+  margin-bottom: 8px;
+}
+
+.form-input {
+  width: 100%;
+  background: #0F1117;
+  border: 1px solid #2A2D3A;
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #FFFFFF;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.form-input:focus {
+  border-color: #4F8EF7;
+}
+
+.form-input::placeholder {
+  color: #4A4D5E;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-row-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+
+/* Slider */
+.slider-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.slider {
+  flex: 1;
+  -webkit-appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: #2A2D3A;
+  outline: none;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #4F8EF7;
+  cursor: pointer;
+}
+
+.slider-value {
+  min-width: 32px;
+  text-align: center;
+  font-weight: 700;
+  color: #4F8EF7;
+  font-size: 15px;
+}
+
+/* Select */
+select.form-input {
+  cursor: pointer;
+}
+
+/* ========================
+   RECOMMENDATION BOX
+======================== */
+.recommendation-box {
+  background: linear-gradient(135deg, 
+    rgba(79,142,247,0.1), 
+    rgba(45,212,160,0.05));
+  border: 1px solid rgba(79,142,247,0.3);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 28px;
+}
+
+.recommendation-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: #4F8EF7;
+  margin-bottom: 10px;
+}
+
+.recommendation-main {
+  font-size: 20px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 8px;
+}
+
+.recommendation-why {
+  font-size: 13px;
+  color: #8B8FA8;
+  line-height: 1.6;
+}
+
+/* ========================
+   READINESS SECTION
+======================== */
+.readiness-section {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 24px;
+  align-items: center;
+  background: #1A1D27;
+  border: 1px solid #2A2D3A;
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 28px;
+}
+
+.readiness-score {
+  font-size: 56px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -2px;
+}
+
+.readiness-score.score-high   { color: #2DD4A0; }
+.readiness-score.score-medium { color: #F5A623; }
+.readiness-score.score-low    { color: #F75C5C; }
+
+.readiness-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #8B8FA8;
+  margin-bottom: 6px;
+}
+
+.readiness-message {
+  font-size: 15px;
+  font-weight: 500;
+  color: #FFFFFF;
+  margin-bottom: 12px;
+}
+
+.progress-bar-track {
+  background: #2A2D3A;
+  border-radius: 4px;
+  height: 6px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.6s ease;
+}
+
+.progress-bar-fill.score-high   { background: #2DD4A0; }
+.progress-bar-fill.score-medium { background: #F5A623; }
+.progress-bar-fill.score-low    { background: #F75C5C; }
+
+/* ========================
+   TIMELINE
+======================== */
+.timeline-section {
+  background: #1A1D27;
+  border: 1px solid #2A2D3A;
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 28px;
+  overflow-x: auto;
+}
+
+.timeline-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #8B8FA8;
+  margin-bottom: 20px;
+}
+
+.timeline-track {
+  position: relative;
+  height: 60px;
+  min-width: 600px;
+}
+
+.timeline-line {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #2A2D3A;
+}
+
+.timeline-marker {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.timeline-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #0F1117;
+  margin-top: 14px;
+}
+
+.timeline-marker-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #8B8FA8;
+  white-space: nowrap;
+  margin-top: 6px;
+  text-align: center;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ========================
+   SECTION HEADERS
+======================== */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #8B8FA8;
+}
+
+/* ========================
+   TOPIC ROWS
+======================== */
+.topic-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #0F1117;
+  border: 1px solid #2A2D3A;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  gap: 12px;
+}
+
+.topic-name {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: #FFFFFF;
+}
+
+.topic-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ========================
+   CONFIDENCE DOTS
+======================== */
+.confidence-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.confidence-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #2A2D3A;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.confidence-dot.filled-1 { background: #F75C5C; }
+.confidence-dot.filled-2 { background: #F5A623; }
+.confidence-dot.filled-3 { background: #F5A623; }
+.confidence-dot.filled-4 { background: #2DD4A0; }
+.confidence-dot.filled-5 { background: #2DD4A0; }
+
+/* ========================
+   EMPTY STATE
+======================== */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #8B8FA8;
+}
+
+.empty-state-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.empty-state h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ========================
+   DIVIDER
+======================== */
+.divider {
+  height: 1px;
+  background: #2A2D3A;
+  margin: 24px 0;
+}
+
+/* ========================
+   GRID LAYOUTS
+======================== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  background: #1A1D27;
+  border: 1px solid #2A2D3A;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #8B8FA8;
+}
+
+/* ========================
+   TRANSPARENCY SECTION
+======================== */
+.transparency-block {
+  background: #1A1D27;
+  border: 1px solid #2A2D3A;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.transparency-block h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #4F8EF7;
+  margin-bottom: 12px;
+}
+
+.transparency-block p {
+  font-size: 14px;
+  color: #8B8FA8;
+  line-height: 1.7;
+}
+
+/* ========================
+   MODAL OVERLAY
+======================== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay.open {
+  display: flex;
+}
+
+.modal {
+  background: #1A1D27;
+  border: 1px solid #2A2D3A;
+  border-radius: 16px;
+  padding: 32px;
+  width: 100%;
+  max-width: 540px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.modal h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+/* ========================
+   SCROLLBAR
+======================== */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #0F1117; }
+::-webkit-scrollbar-thumb { 
+  background: #2A2D3A; 
+  border-radius: 3px; 
+}
+::-webkit-scrollbar-thumb:hover { background: #3A3D4A; }
+
+/* ========================
+   UTILITY CLASSES
+======================== */
+.text-red   { color: #F75C5C; }
+.text-amber { color: #F5A623; }
+.text-green { color: #2DD4A0; }
+.text-blue  { color: #4F8EF7; }
+.text-muted { color: #8B8FA8; }
+.text-small { font-size: 12px; }
+.text-bold  { font-weight: 700; }
+.mt-8  { margin-top: 8px; }
+.mt-16 { margin-top: 16px; }
+.mt-24 { margin-top: 24px; }
+.mb-8  { margin-bottom: 8px; }
+.mb-16 { margin-bottom: 16px; }
+.flex  { display: flex; }
+.flex-between { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+}
+.gap-8  { gap: 8px; }
+.gap-12 { gap: 12px; }
   </style>
 </head>
 <body>
-
-  <!-- ========================
-       VIEW 1: SETUP
-  ========================= -->
-  <div id="view-setup" class="view active">
-    <h1>Study Triage — Setup</h1>
-    <p>Setup view placeholder</p>
-    <button onclick="showView('dashboard')">Go to Dashboard</button>
+<!-- ========================
+     MODAL: ADD SUBJECT
+========================= -->
+<div id="modal-add-subject" class="modal-overlay">
+  <div class="modal">
+    <h2>Add Subject</h2>
+    <p class="text-muted">Modal content coming in Stage 4</p>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" 
+        onclick="closeModal('modal-add-subject')">Cancel</button>
+      <button class="btn btn-primary">Save Subject</button>
+    </div>
   </div>
+</div>
 
-  <!-- ========================
-       VIEW 2: DASHBOARD
-  ========================= -->
-  <div id="view-dashboard" class="view">
-    <h1>Study Triage — Dashboard</h1>
-    <p>Dashboard view placeholder</p>
-    <button onclick="showView('setup')">Back to Setup</button>
-    <button onclick="showView('deepdive')">Go to Deep Dive</button>
+<!-- ========================
+     VIEW 1: SETUP
+========================= -->
+<div id="view-setup" class="view active">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <div class="navbar-logo">ST</div>
+      <span class="navbar-title">Study <span>Triage</span></span>
+    </div>
+    <div class="navbar-nav">
+      <button class="nav-btn active">Setup</button>
+    </div>
+  </nav>
+  <div class="page-container">
+    <div class="page-header">
+      <h1>Set Up Your Semester</h1>
+      <p>Add your subjects and topics to get started</p>
+    </div>
+    <div class="card">
+      <p class="text-muted">Setup form coming in Stage 4</p>
+      <br>
+      <button class="btn btn-primary" 
+        onclick="showView('dashboard')">Go to Dashboard →</button>
+    </div>
   </div>
+</div>
 
-  <!-- ========================
-       VIEW 3: DEEP DIVE
-  ========================= -->
-  <div id="view-deepdive" class="view">
-    <h1>Study Triage — Deep Dive</h1>
-    <p>Deep dive view placeholder</p>
-    <button onclick="showView('dashboard')">Back to Dashboard</button>
-  </div>
+<!-- ========================
+     VIEW 2: DASHBOARD
+========================= -->
+<div id="view-dashboard" class="view">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <div class="navbar-logo">ST</div>
+      <span class="navbar-title">Study <span>Triage</span></span>
+    </div>
+    <div class="navbar-nav">
+      <button class="nav-btn" onclick="showView('setup')">Setup</button>
+      <button class="nav-btn active">Dashboard</button>
+      <button class="nav-btn" 
+        onclick="showView('transparency')">AI Transparency</button>
+    </div>
+  </nav>
+  <div class="page-container">
+    <div class="page-header">
+      <h1>Your Semester Dashboard</h1>
+      <p>Subjects ranked by academic risk — highest priority first</p>
+    </div>
 
-  <!-- ========================
-       VIEW 4: TRANSPARENCY
-  ========================= -->
-  <div id="view-transparency" class="view">
-    <h1>Study Triage — AI Transparency</h1>
-    <p>Transparency section placeholder</p>
-    <button onclick="showView('dashboard')">Back to Dashboard</button>
+    <!-- Readiness -->
+    <div class="readiness-section">
+      <div class="readiness-score score-medium">67%</div>
+      <div>
+        <div class="readiness-label">Overall Readiness</div>
+        <div class="readiness-message">
+          Some subjects need attention. Check your amber cards.
+        </div>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill score-medium" 
+               style="width: 67%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recommendation -->
+    <div class="recommendation-box">
+      <div class="recommendation-label">⚡ Focus Right Now</div>
+      <div class="recommendation-main">
+        Mathematics → Topic: Integration
+      </div>
+      <div class="recommendation-why">
+        3 days until test · Confidence 2/5 · 
+        Notes not started · Currently critical risk
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value text-red">2</div>
+        <div class="stat-label">Critical Subjects</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value text-amber">1</div>
+        <div class="stat-label">Watch Closely</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value text-green">3</div>
+        <div class="stat-label">On Track</div>
+      </div>
+    </div>
+
+    <!-- Subject Cards -->
+    <div class="section-header">
+      <span class="section-title">Subjects by Risk</span>
+      <button class="btn btn-primary btn-sm">↻ Recalculate</button>
+    </div>
+
+    <div class="subject-card risk-red" 
+         onclick="showView('deepdive')">
+      <div class="subject-card-header">
+        <span class="subject-card-title">Mathematics</span>
+        <span class="badge badge-red">Critical</span>
+      </div>
+      <div class="subject-card-meta">
+        <div class="meta-item">
+          <span class="meta-label">Urgency Score</span>
+          <span class="meta-value text-red">84</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Days Until Test</span>
+          <span class="meta-value">3 days</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Avg Confidence</span>
+          <span class="meta-value">2.1 / 5</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Credits</span>
+          <span class="meta-value">16</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Grade</span>
+          <span class="meta-value text-red">38%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="subject-card risk-amber">
+      <div class="subject-card-header">
+        <span class="subject-card-title">Computer Science</span>
+        <span class="badge badge-amber">Watch</span>
+      </div>
+      <div class="subject-card-meta">
+        <div class="meta-item">
+          <span class="meta-label">Urgency Score</span>
+          <span class="meta-value text-amber">61</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Days Until Test</span>
+          <span class="meta-value">12 days</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Avg Confidence</span>
+          <span class="meta-value">3.2 / 5</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Credits</span>
+          <span class="meta-value">16</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Grade</span>
+          <span class="meta-value text-amber">52%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="subject-card risk-green">
+      <div class="subject-card-header">
+        <span class="subject-card-title">English</span>
+        <span class="badge badge-green">On Track</span>
+      </div>
+      <div class="subject-card-meta">
+        <div class="meta-item">
+          <span class="meta-label">Urgency Score</span>
+          <span class="meta-value text-green">28</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Days Until Test</span>
+          <span class="meta-value">31 days</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Avg Confidence</span>
+          <span class="meta-value">4.1 / 5</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Credits</span>
+          <span class="meta-value">8</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Grade</span>
+          <span class="meta-value text-green">71%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timeline placeholder -->
+    <div class="timeline-section">
+      <div class="timeline-title">Semester Timeline</div>
+      <div class="timeline-track">
+        <div class="timeline-line"></div>
+        <div class="timeline-marker" style="left: 10%">
+          <div class="timeline-dot" 
+               style="background:#F75C5C"></div>
+          <div class="timeline-marker-label">Mathematics</div>
+        </div>
+        <div class="timeline-marker" style="left: 40%">
+          <div class="timeline-dot" 
+               style="background:#F5A623"></div>
+          <div class="timeline-marker-label">Comp Sci</div>
+        </div>
+        <div class="timeline-marker" style="left: 85%">
+          <div class="timeline-dot" 
+               style="background:#2DD4A0"></div>
+          <div class="timeline-marker-label">English</div>
+        </div>
+      </div>
+    </div>
+
   </div>
+</div>
+
+<!-- ========================
+     VIEW 3: DEEP DIVE
+========================= -->
+<div id="view-deepdive" class="view">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <div class="navbar-logo">ST</div>
+      <span class="navbar-title">Study <span>Triage</span></span>
+    </div>
+    <div class="navbar-nav">
+      <button class="nav-btn" 
+        onclick="showView('dashboard')">← Dashboard</button>
+    </div>
+  </nav>
+  <div class="page-container">
+    <div class="flex-between mb-16">
+      <div class="page-header" style="margin-bottom:0">
+        <h1>Mathematics</h1>
+        <p>16 credits · 3 days until test</p>
+      </div>
+      <span class="badge badge-red">Critical Risk · Score 84</span>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-header">
+      <span class="section-title">Topics — Weakest First</span>
+    </div>
+
+    <div class="topic-row">
+      <div class="topic-name">Integration</div>
+      <div class="topic-controls">
+        <div class="confidence-dots">
+          <div class="confidence-dot filled-1"></div>
+          <div class="confidence-dot"></div>
+          <div class="confidence-dot"></div>
+          <div class="confidence-dot"></div>
+          <div class="confidence-dot"></div>
+        </div>
+        <span class="badge badge-gray">Notes: Not Started</span>
+        <button class="btn btn-success btn-sm">Mark Revised</button>
+      </div>
+    </div>
+
+    <div class="topic-row">
+      <div class="topic-name">Differentiation</div>
+      <div class="topic-controls">
+        <div class="confidence-dots">
+          <div class="confidence-dot filled-2"></div>
+          <div class="confidence-dot filled-2"></div>
+          <div class="confidence-dot"></div>
+          <div class="confidence-dot"></div>
+          <div class="confidence-dot"></div>
+        </div>
+        <span class="badge badge-blue">Notes: In Progress</span>
+        <button class="btn btn-success btn-sm">Mark Revised</button>
+      </div>
+    </div>
+
+    <div class="topic-row">
+      <div class="topic-name">Algebra</div>
+      <div class="topic-controls">
+        <div class="confidence-dots">
+          <div class="confidence-dot filled-4"></div>
+          <div class="confidence-dot filled-4"></div>
+          <div class="confidence-dot filled-4"></div>
+          <div class="confidence-dot filled-4"></div>
+          <div class="confidence-dot"></div>
+        </div>
+        <span class="badge badge-green">Notes: Done</span>
+        <button class="btn btn-success btn-sm">Mark Revised</button>
+      </div>
+    </div>
+
+    <div class="card mt-24">
+      <div class="section-title mb-8">💡 Study Session Suggestion</div>
+      <p class="text-muted mt-8">Based on your available hours and 
+      weakness score, dedicate <strong style="color:white">3 sessions</strong> 
+      to Mathematics this week. Start with Integration.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========================
+     VIEW 4: TRANSPARENCY
+========================= -->
+<div id="view-transparency" class="view">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <div class="navbar-logo">ST</div>
+      <span class="navbar-title">Study <span>Triage</span></span>
+    </div>
+    <div class="navbar-nav">
+      <button class="nav-btn" 
+        onclick="showView('dashboard')">← Dashboard</button>
+    </div>
+  </nav>
+  <div class="page-container">
+    <div class="page-header">
+      <h1>AI Transparency</h1>
+      <p>How AI was used and what decisions were made by the student</p>
+    </div>
+    <div class="transparency-block">
+      <h3>Content coming in Stage 11</h3>
+      <p>This section will document every AI interaction, 
+      every decision made independently, and every refinement 
+      applied to the AI suggestions.</p>
+    </div>
+  </div>
+</div>
 
   <script>
-    // ========================
-    // VIEW NAVIGATION
-    // ========================
-    function showView(viewName) {
-      // Hide all views
-      document.querySelectorAll('.view').forEach(v => {
-        v.classList.remove('active');
-      });
-      // Show the requested view
-      document.getElementById('view-' + viewName).classList.add('active');
-    }
+  function showView(viewName) {
+  document.querySelectorAll('.view').forEach(v => {
+    v.classList.remove('active');
+  });
+  document.getElementById('view-' + viewName).classList.add('active');
+}
+
+function closeModal(modalId) {
+  document.getElementById(modalId).classList.remove('open');
+}
+
+function openModal(modalId) {
+  document.getElementById(modalId).classList.add('open');
+}
   </script>
 
 </body>
