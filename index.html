@@ -812,16 +812,151 @@ select.form-input {
 </head>
 <body>
 <!-- ========================
-     MODAL: ADD SUBJECT
+     MODAL: ADD TOPIC
 ========================= -->
-<div id="modal-add-subject" class="modal-overlay">
+<div id="modal-add-topic" class="modal-overlay">
   <div class="modal">
-    <h2>Add Subject</h2>
-    <p class="text-muted">Modal content coming in Stage 4</p>
+    <h2 id="modal-add-topic-title">Add Topic</h2>
+
+    <div class="form-group">
+      <label class="form-label">Topic Name</label>
+      <input 
+        type="text" 
+        class="form-input" 
+        id="add-topic-name"
+        placeholder="e.g. Integration"
+      >
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">
+        Confidence Level: 
+        <span id="add-topic-conf-display" class="text-blue">3</span>/5
+      </label>
+      <div class="slider-container">
+        <span class="text-muted text-small">1</span>
+        <input 
+          type="range" 
+          class="slider" 
+          id="add-topic-confidence"
+          min="1" max="5" value="3"
+          oninput="document.getElementById('add-topic-conf-display')
+                   .textContent = this.value"
+        >
+        <span class="text-muted text-small">5</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Notes Status</label>
+      <select class="form-input" id="add-topic-notes">
+        <option value="not_started">Not Started</option>
+        <option value="in_progress">In Progress</option>
+        <option value="done">Done</option>
+      </select>
+    </div>
+
+    <div id="add-topic-error" style="
+      display:none; 
+      color:#F75C5C; 
+      font-size:13px; 
+      margin-bottom:12px;
+    "></div>
+
     <div class="modal-footer">
-      <button class="btn btn-secondary" 
-        onclick="closeModal('modal-add-subject')">Cancel</button>
-      <button class="btn btn-primary">Save Subject</button>
+      <button 
+        class="btn btn-secondary" 
+        onclick="closeModal('modal-add-topic')"
+      >
+        Cancel
+      </button>
+      <button class="btn btn-primary" onclick="saveTopicFromModal()">
+        Save Topic
+      </button>
+    </div>
+  </div>
+</div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Credit Value</label>
+        <select class="form-input" id="modal-subject-credits">
+          <option value="4">4 Credits</option>
+          <option value="8">8 Credits</option>
+          <option value="16" selected>16 Credits</option>
+          <option value="32">32 Credits</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Test / Exam Date</label>
+        <input 
+          type="date" 
+          class="form-input" 
+          id="modal-subject-testdate"
+        >
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Current Grade % (optional)</label>
+        <input 
+          type="number" 
+          class="form-input" 
+          id="modal-subject-grade"
+          placeholder="e.g. 54"
+          min="0" max="100"
+        >
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pass Mark %</label>
+        <input 
+          type="number" 
+          class="form-input" 
+          id="modal-subject-passmark"
+          placeholder="50"
+          value="50"
+          min="0" max="100"
+        >
+      </div>
+    </div>
+
+    <!-- Error message -->
+    <div id="modal-subject-error" style="
+      display:none; 
+      color:#F75C5C; 
+      font-size:13px; 
+      margin-bottom:12px;
+    "></div>
+
+    <!-- TOPICS SECTION -->
+    <div class="divider"></div>
+    <div class="section-header">
+      <span class="section-title">Topics</span>
+      <button class="btn btn-secondary btn-sm" onclick="addTopicRow()">
+        + Add Topic
+      </button>
+    </div>
+
+    <div id="modal-topics-list">
+      <!-- Topic rows added dynamically -->
+    </div>
+
+    <div id="modal-topics-empty" class="text-muted text-small mt-8">
+      No topics added yet. Click "+ Add Topic" to add topics for this subject.
+    </div>
+
+    <div class="modal-footer">
+      <button 
+        class="btn btn-secondary" 
+        onclick="closeModal('modal-add-subject'); clearSubjectModal();"
+      >
+        Cancel
+      </button>
+      <button class="btn btn-primary" onclick="saveSubjectFromModal()">
+        Save Subject
+      </button>
     </div>
   </div>
 </div>
@@ -837,19 +972,102 @@ select.form-input {
     </div>
     <div class="navbar-nav">
       <button class="nav-btn active">Setup</button>
+      <button class="nav-btn" onclick="showView('dashboard')">Dashboard</button>
+      <button class="nav-btn" onclick="showView('transparency')">AI Transparency</button>
     </div>
   </nav>
+
   <div class="page-container">
     <div class="page-header">
       <h1>Set Up Your Semester</h1>
-      <p>Add your subjects and topics to get started</p>
+      <p>Add your subjects and topics so Study Triage can calculate your academic risk.</p>
     </div>
+
+    <!-- STUDENT PROFILE -->
     <div class="card">
-      <p class="text-muted">Setup form coming in Stage 4</p>
-      <br>
-      <button class="btn btn-primary" 
-        onclick="showView('dashboard')">Go to Dashboard →</button>
+      <div class="section-title mb-16">Your Profile</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Your Name</label>
+          <input 
+            type="text" 
+            class="form-input" 
+            id="input-student-name"
+            placeholder="e.g. Gabriella"
+            value=""
+            oninput="updateProfile()"
+          >
+        </div>
+        <div class="form-group">
+          <label class="form-label">Semester</label>
+          <input 
+            type="text" 
+            class="form-input" 
+            id="input-semester"
+            placeholder="e.g. Semester 1 2026"
+            value=""
+            oninput="updateProfile()"
+          >
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">
+          Available Study Hours Per Day: 
+          <span id="hours-display" class="text-blue">4</span>
+        </label>
+        <div class="slider-container">
+          <span class="text-muted text-small">1</span>
+          <input 
+            type="range" 
+            class="slider" 
+            id="input-study-hours"
+            min="1" max="12" value="4"
+            oninput="updateStudyHours(this.value)"
+          >
+          <span class="text-muted text-small">12</span>
+        </div>
+      </div>
     </div>
+
+    <!-- SUBJECTS LIST -->
+    <div class="section-header mt-24">
+      <span class="section-title">Your Subjects</span>
+      <button class="btn btn-primary btn-sm" onclick="openModal('modal-add-subject')">
+        + Add Subject
+      </button>
+    </div>
+
+    <!-- Subjects render here -->
+    <div id="setup-subjects-list">
+      <!-- Populated by renderSetupSubjects() -->
+    </div>
+
+    <!-- Empty state -->
+    <div id="setup-empty-state">
+      <div class="empty-state">
+        <div class="empty-state-icon">📚</div>
+        <h3>No subjects yet</h3>
+        <p>Click "Add Subject" to start building your semester profile.<br>
+        Add at least 2 subjects to unlock the dashboard.</p>
+      </div>
+    </div>
+
+    <!-- GO TO DASHBOARD -->
+    <div id="setup-launch-btn" style="display:none; margin-top:24px;">
+      <div class="card" style="
+        border-color: rgba(79,142,247,0.3); 
+        background: rgba(79,142,247,0.05);
+        text-align: center;
+      ">
+        <p class="text-muted mb-16">
+          You have added your subjects. Head to the dashboard to see your academic risk breakdown.
+        </p>
+        <button class="btn btn-primary" onclick="launchDashboard()">
+          View My Dashboard →
+        </button>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -1615,7 +1833,403 @@ function initApp() {
 
 // Run on page load
 initApp();
+// ============================================
+// STAGE 4 — SETUP VIEW LOGIC
+// ============================================
+
+// Tracks topics being built inside the modal
+let modalTopics = [];
+
+// ========================
+// PROFILE UPDATE
+// ========================
+function updateProfile() {
+  appData.profile.name     = document.getElementById('input-student-name').value;
+  appData.profile.semester = document.getElementById('input-semester').value;
+  saveToStorage();
+}
+
+function updateStudyHours(value) {
+  document.getElementById('hours-display').textContent = value;
+  appData.profile.studyHoursPerDay = parseInt(value);
+  saveToStorage();
+}
+
+// ========================
+// RENDER SETUP SUBJECTS
+// ========================
+function renderSetupSubjects() {
+  const list       = document.getElementById('setup-subjects-list');
+  const emptyState = document.getElementById('setup-empty-state');
+  const launchBtn  = document.getElementById('setup-launch-btn');
+
+  if (appData.subjects.length === 0) {
+    list.innerHTML       = '';
+    emptyState.style.display = 'block';
+    launchBtn.style.display  = 'none';
+    return;
+  }
+
+  emptyState.style.display = 'none';
+  launchBtn.style.display  = appData.subjects.length >= 2 ? 'block' : 'none';
+
+  list.innerHTML = appData.subjects.map(subject => {
+    const days     = getDaysUntilTest(subject.testDate);
+    const daysText = formatDaysText(subject.testDate);
+    const riskClass = {
+      red: 'badge-red', amber: 'badge-amber', green: 'badge-green'
+    }[subject.riskLevel] || 'badge-gray';
+
+    return `
+      <div class="subject-card risk-${subject.riskLevel}" 
+           style="cursor:default;">
+        <div class="subject-card-header">
+          <span class="subject-card-title">${subject.name}</span>
+          <div class="flex gap-8">
+            <button 
+              class="btn btn-secondary btn-sm"
+              onclick="openAddTopicModal('${subject.id}')"
+            >
+              + Add Topic
+            </button>
+            <button 
+              class="btn btn-danger btn-sm"
+              onclick="handleDeleteSubject('${subject.id}')"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+
+        <div class="subject-card-meta">
+          <div class="meta-item">
+            <span class="meta-label">Credits</span>
+            <span class="meta-value">${subject.credits}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Test Date</span>
+            <span class="meta-value">${daysText}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Grade</span>
+            <span class="meta-value">
+              ${subject.currentGrade !== null ? subject.currentGrade + '%' : 'Not set'}
+            </span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Topics</span>
+            <span class="meta-value">${subject.topics.length}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Urgency</span>
+            <span class="meta-value">${subject.urgencyScore}</span>
+          </div>
+        </div>
+
+        <!-- Topics list -->
+        ${subject.topics.length > 0 ? `
+          <div style="margin-top:14px; border-top:1px solid #2A2D3A; padding-top:14px;">
+            ${subject.topics.map(topic => `
+              <div class="topic-row" style="margin-bottom:6px;">
+                <div class="topic-name">${topic.name}</div>
+                <div class="topic-controls">
+                  <div class="confidence-dots">
+                    ${[1,2,3,4,5].map(i => `
+                      <div class="confidence-dot ${
+                        i <= topic.confidence ? 'filled-' + topic.confidence : ''
+                      }"></div>
+                    `).join('')}
+                  </div>
+                  <span class="badge ${notesStatusBadgeClass(topic.notesStatus)}">
+                    ${notesStatusLabel(topic.notesStatus)}
+                  </span>
+                  <button 
+                    class="btn btn-danger btn-sm"
+                    onclick="handleDeleteTopic('${subject.id}', '${topic.id}')"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        ` : `
+          <p class="text-muted text-small" style="margin-top:12px;">
+            No topics yet — click "+ Add Topic" to add topics for this subject.
+          </p>
+        `}
+      </div>
+    `;
+  }).join('');
+}
+
+// ========================
+// SUBJECT MODAL
+// ========================
+function clearSubjectModal() {
+  document.getElementById('modal-subject-name').value     = '';
+  document.getElementById('modal-subject-credits').value  = '16';
+  document.getElementById('modal-subject-testdate').value = '';
+  document.getElementById('modal-subject-grade').value    = '';
+  document.getElementById('modal-subject-passmark').value = '50';
+  document.getElementById('modal-subject-error').style.display = 'none';
+  document.getElementById('modal-topics-list').innerHTML  = '';
+  document.getElementById('modal-topics-empty').style.display = 'block';
+  modalTopics = [];
+}
+
+function addTopicRow() {
+  modalTopics.push({
+    tempId: generateId(),
+    name: '',
+    confidence: 3,
+    notesStatus: 'not_started',
+    coveredInClass: false
+  });
+  renderModalTopics();
+}
+
+function renderModalTopics() {
+  const list  = document.getElementById('modal-topics-list');
+  const empty = document.getElementById('modal-topics-empty');
+
+  if (modalTopics.length === 0) {
+    list.innerHTML        = '';
+    empty.style.display   = 'block';
+    return;
+  }
+
+  empty.style.display = 'none';
+
+  list.innerHTML = modalTopics.map((topic, index) => `
+    <div class="card-sm" style="margin-bottom:10px;">
+      <div class="form-row-3" style="margin-bottom:10px;">
+        <div class="form-group" style="margin-bottom:0; grid-column: span 2;">
+          <label class="form-label">Topic Name</label>
+          <input 
+            type="text" 
+            class="form-input" 
+            placeholder="e.g. Integration"
+            value="${topic.name}"
+            oninput="updateModalTopic(${index}, 'name', this.value)"
+          >
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Notes Status</label>
+          <select 
+            class="form-input"
+            onchange="updateModalTopic(${index}, 'notesStatus', this.value)"
+          >
+            <option value="not_started" ${
+              topic.notesStatus === 'not_started' ? 'selected' : ''
+            }>Not Started</option>
+            <option value="in_progress" ${
+              topic.notesStatus === 'in_progress' ? 'selected' : ''
+            }>In Progress</option>
+            <option value="done" ${
+              topic.notesStatus === 'done' ? 'selected' : ''
+            }>Done</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex-between">
+        <div>
+          <label class="form-label">
+            Confidence: 
+            <span id="conf-label-${index}" class="text-blue">
+              ${topic.confidence}/5
+            </span>
+          </label>
+          <div class="slider-container">
+            <span class="text-muted text-small">1</span>
+            <input 
+              type="range" 
+              class="slider" 
+              min="1" max="5" 
+              value="${topic.confidence}"
+              oninput="updateModalTopic(${index}, 'confidence', 
+                       parseInt(this.value)); 
+                       document.getElementById('conf-label-${index}')
+                       .textContent = this.value + '/5';"
+            >
+            <span class="text-muted text-small">5</span>
+          </div>
+        </div>
+        <button 
+          class="btn btn-danger btn-sm"
+          onclick="removeModalTopic(${index})"
+        >
+          Remove
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateModalTopic(index, field, value) {
+  if (modalTopics[index]) {
+    modalTopics[index][field] = value;
+  }
+}
+
+function removeModalTopic(index) {
+  modalTopics.splice(index, 1);
+  renderModalTopics();
+}
+
+function saveSubjectFromModal() {
+  const name     = document.getElementById('modal-subject-name').value.trim();
+  const credits  = document.getElementById('modal-subject-credits').value;
+  const testDate = document.getElementById('modal-subject-testdate').value;
+  const grade    = document.getElementById('modal-subject-grade').value;
+  const passMark = document.getElementById('modal-subject-passmark').value;
+  const errorEl  = document.getElementById('modal-subject-error');
+
+  // Validation
+  if (!name) {
+    errorEl.textContent     = 'Please enter a subject name.';
+    errorEl.style.display   = 'block';
+    return;
+  }
+  if (!testDate) {
+    errorEl.textContent     = 'Please select a test date.';
+    errorEl.style.display   = 'block';
+    return;
+  }
+
+  errorEl.style.display = 'none';
+
+  // Create subject
+  const subject = createSubject(name, credits, testDate, grade, passMark);
+
+  // Attach topics
+  modalTopics.forEach(t => {
+    if (t.name.trim()) {
+      subject.topics.push(
+        createTopic(t.name.trim(), t.confidence, t.notesStatus, false)
+      );
+    }
+  });
+
+  // Add to app data
+  addSubject(subject);
+  recalculateAndSort();
+
+  // Close and refresh
+  closeModal('modal-add-subject');
+  clearSubjectModal();
+  renderSetupSubjects();
+}
+
+// ========================
+// ADD TOPIC TO EXISTING SUBJECT
+// ========================
+
+// Tracks which subject we're adding a topic to
+let addTopicTargetSubjectId = null;
+
+function openAddTopicModal(subjectId) {
+  addTopicTargetSubjectId = subjectId;
+  const subject = getSubjectById(subjectId);
+  if (!subject) return;
+
+  // Reuse the subject modal just for topics
+  document.getElementById('modal-add-topic-title').textContent =
+    'Add Topic to ' + subject.name;
+
+  openModal('modal-add-topic');
+}
+
+function saveTopicFromModal() {
+  const name       = document.getElementById('add-topic-name').value.trim();
+  const confidence = document.getElementById('add-topic-confidence').value;
+  const notes      = document.getElementById('add-topic-notes').value;
+  const errorEl    = document.getElementById('add-topic-error');
+
+  if (!name) {
+    errorEl.textContent   = 'Please enter a topic name.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  errorEl.style.display = 'none';
+
+  const topic = createTopic(name, confidence, notes, false);
+  addTopicToSubject(addTopicTargetSubjectId, topic);
+  recalculateAndSort();
+
+  // Reset fields
+  document.getElementById('add-topic-name').value       = '';
+  document.getElementById('add-topic-confidence').value = '3';
+  document.getElementById('add-topic-conf-display').textContent = '3';
+  document.getElementById('add-topic-notes').value      = 'not_started';
+
+  closeModal('modal-add-topic');
+  renderSetupSubjects();
+}
+
+// ========================
+// DELETE HANDLERS
+// ========================
+function handleDeleteSubject(subjectId) {
+  if (deleteSubject(subjectId)) {
+    recalculateAndSort();
+    renderSetupSubjects();
+  }
+}
+
+function handleDeleteTopic(subjectId, topicId) {
+  if (confirm('Delete this topic?')) {
+    deleteTopicFromSubject(subjectId, topicId);
+    recalculateAndSort();
+    renderSetupSubjects();
+  }
+}
+
+// ========================
+// LAUNCH DASHBOARD
+// ========================
+function launchDashboard() {
+  appData.appState.setupComplete = true;
+  saveToStorage();
+  recalculateAndSort();
+  renderDashboard();
+  showView('dashboard');
+}
+
+// ========================
+// LOAD PROFILE ON INIT
+// ========================
+function loadProfileInputs() {
+  const nameEl  = document.getElementById('input-student-name');
+  const semEl   = document.getElementById('input-semester');
+  const hoursEl = document.getElementById('input-study-hours');
+  const dispEl  = document.getElementById('hours-display');
+
+  if (nameEl)  nameEl.value  = appData.profile.name     || '';
+  if (semEl)   semEl.value   = appData.profile.semester  || '';
+  if (hoursEl) hoursEl.value = appData.profile.studyHoursPerDay || 4;
+  if (dispEl)  dispEl.textContent = appData.profile.studyHoursPerDay || 4;
+}
+function initApp() {
+  recalculateAndSort();
+  loadProfileInputs();
+  renderSetupSubjects();
+
+  if (appData.appState.setupComplete && appData.subjects.length > 0) {
+    renderDashboard();
+    showView('dashboard');
+  } else {
+    showView('setup');
+  }
+
+  console.log('🚀 Study Triage initialised');
+  console.log('📚 Subjects loaded:', appData.subjects.length);
+}
   </script>
+  
 
 </body>
+
 </html>
