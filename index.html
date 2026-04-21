@@ -1151,20 +1151,470 @@ select.form-input {
 </div>
 
   <script>
-  function showView(viewName) {
+  // ============================================
+// STUDY TRIAGE — DATA MODEL & STORAGE
+// ============================================
+
+// ========================
+// DEFAULT APP STATE
+// ========================
+const DEFAULT_STATE = {
+  profile: {
+    name: '',
+    semester: '',
+    studyHoursPerDay: 4
+  },
+  subjects: [],
+  appState: {
+    currentView: 'setup',
+    selectedSubjectId: null,
+    setupComplete: false
+  }
+};
+
+// ========================
+// LIVE APP STATE
+// Loaded from localStorage or defaulted
+// ========================
+let appData = loadFromStorage();
+
+// ========================
+// LOCALSTORAGE FUNCTIONS
+// ========================
+
+function loadFromStorage() {
+  try {
+    const saved = localStorage.getItem('studyTriage_data');
+    if (saved) {
+      console.log('✅ Data loaded from localStorage');
+      return JSON.parse(saved);
+    }
+  } catch (e) {
+    console.warn('⚠️ Could not load from localStorage:', e);
+  }
+  console.log('📋 Starting with fresh data');
+  return JSON.parse(JSON.stringify(DEFAULT_STATE));
+}
+
+function saveToStorage() {
+  try {
+    localStorage.setItem('studyTriage_data', JSON.stringify(appData));
+  } catch (e) {
+    console.warn('⚠️ Could not save to localStorage:', e);
+  }
+}
+
+function clearStorage() {
+  if (confirm('Are you sure you want to reset all data? This cannot be undone.')) {
+    localStorage.removeItem('studyTriage_data');
+    appData = JSON.parse(JSON.stringify(DEFAULT_STATE));
+    saveToStorage();
+    showView('setup');
+    console.log('🗑️ Data cleared');
+  }
+}
+
+// ========================
+// ID GENERATOR
+// ========================
+function generateId() {
+  return 'id_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+}
+
+// ========================
+// SUBJECT FUNCTIONS
+// ========================
+
+function createSubject(name, credits, testDate, currentGrade, passMark) {
+  return {
+    id: generateId(),
+    name: name,
+    credits: parseInt(credits),
+    testDate: testDate,
+    currentGrade: currentGrade === '' ? null : parseFloat(currentGrade),
+    passMark: parseFloat(passMark) || 50,
+    urgencyScore: 0,
+    averageConfidence: 0,
+    riskLevel: 'green',
+    topics: []
+  };
+}
+
+function addSubject(subject) {
+  appData.subjects.push(subject);
+  saveToStorage();
+}
+
+function deleteSubject(subjectId) {
+  if (confirm('Delete this subject and all its topics?')) {
+    appData.subjects = appData.subjects.filter(s => s.id !== subjectId);
+    saveToStorage();
+    return true;
+  }
+  return false;
+}
+
+function getSubjectById(subjectId) {
+  return appData.subjects.find(s => s.id === subjectId);
+}
+
+// ========================
+// TOPIC FUNCTIONS
+// ========================
+
+function createTopic(name, confidence, notesStatus, coveredInClass) {
+  return {
+    id: generateId(),
+    name: name,
+    confidence: parseInt(confidence),
+    notesStatus: notesStatus,   // 'not_started' | 'in_progress' | 'done'
+    coveredInClass: coveredInClass === true || coveredInClass === 'true'
+  };
+}
+
+function addTopicToSubject(subjectId, topic) {
+  const subject = getSubjectById(subjectId);
+  if (subject) {
+    subject.topics.push(topic);
+    saveToStorage();
+    return true;
+  }
+  return false;
+}
+
+function deleteTopicFromSubject(subjectId, topicId) {
+  const subject = getSubjectById(subjectId);
+  if (subject) {
+    subject.topics = subject.topics.filter(t => t.id !== topicId);
+    saveToStorage();
+    return true;
+  }
+  return false;
+}
+
+function updateTopicConfidence(subjectId, topicId, newConfidence) {
+  const subject = getSubjectById(subjectId);
+  if (subject) {
+    const topic = subject.topics.find(t => t.id === topicId);
+    if (topic) {
+      topic.confidence = newConfidence;
+      saveToStorage();
+      return true;
+    }
+  }
+  return false;
+}
+
+function updateTopicNotes(subjectId, topicId, newStatus) {
+  const subject = getSubjectById(subjectId);
+  if (subject) {
+    const topic = subject.topics.find(t => t.id === topicId);
+    if (topic) {
+      topic.notesStatus = newStatus;
+      saveToStorage();
+      return true;
+    }
+  }
+  return false;
+}
+
+function markTopicRevised(subjectId, topicId) {
+  const subject = getSubjectById(subjectId);
+  if (subject) {
+    const topic = subject.topics.find(t => t.id === topicId);
+    if (topic && topic.confidence < 5) {
+      topic.confidence = Math.min(5, topic.confidence + 1);
+      if (topic.notesStatus === 'not_started') {
+        topic.notesStatus = 'in_progress';
+      }
+      saveToStorage();
+      return true;
+    }
+  }
+  return false;
+}
+
+// ========================
+// URGENCY SCORE FORMULA
+// ========================
+// Four components, each scored 0-100
+// then weighted into a final score 0-100
+
+function calculateDaysScore(testDate) {
+  if (!testDate) return 50;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const test = new Date(testDate);
+  test.setHours(0, 0, 0, 0);
+  const days = Math.ceil((test - today) / (1000 * 60 * 60 * 24));
+
+  // Urgency bands — sharply increasing risk near test date
+  if (days <= 0)  return 100; // test is today or past
+  if (days <= 3)  return 90;  // critical
+  if (days <= 7)  return 75;  // very urgent
+  if (days <= 14) return 55;  // urgent
+  if (days <= 30) return 35;  // moderate
+  return 15;                  // comfortable
+}
+
+function calculateCreditScore(credits) {
+  if (credits >= 32) return 100;
+  if (credits >= 16) return 75;
+  if (credits >= 8)  return 50;
+  return 25;
+}
+
+function calculateConfidenceScore(topics) {
+  if (!topics || topics.length === 0) return 50;
+  const avg = topics.reduce((sum, t) => sum + t.confidence, 0) / topics.length;
+  // Invert: low confidence = high urgency score
+  return ((5 - avg) / 4) * 100;
+}
+
+function calculateGradeRiskScore(currentGrade, passMark) {
+  if (currentGrade === null || currentGrade === undefined) return 50;
+  const pm = passMark || 50;
+  if (currentGrade >= pm + 20) return 0;   // comfortably passing
+  if (currentGrade >= pm)      return 30;  // passing but close
+  if (currentGrade >= pm - 20) return 80;  // failing
+  return 100;                              // critically failing
+}
+
+function calculateUrgencyScore(subject) {
+  const daysScore      = calculateDaysScore(subject.testDate);
+  const creditScore    = calculateCreditScore(subject.credits);
+  const confidScore    = calculateConfidenceScore(subject.topics);
+  const gradeRiskScore = calculateGradeRiskScore(
+                           subject.currentGrade, 
+                           subject.passMark
+                         );
+
+  // Weighted formula — weights sum to 1.0
+  const score = (daysScore      * 0.40) +
+                (creditScore    * 0.20) +
+                (confidScore    * 0.25) +
+                (gradeRiskScore * 0.15);
+
+  return Math.round(score);
+}
+
+function getRiskLevel(urgencyScore) {
+  if (urgencyScore >= 75) return 'red';
+  if (urgencyScore >= 45) return 'amber';
+  return 'green';
+}
+
+function getAverageConfidence(topics) {
+  if (!topics || topics.length === 0) return 0;
+  const avg = topics.reduce((sum, t) => sum + t.confidence, 0) / topics.length;
+  return Math.round(avg * 10) / 10;
+}
+
+// ========================
+// INSERTION SORT ALGORITHM
+// ========================
+// Sorts subjects array by urgency score, highest to lowest
+// Hand-written insertion sort — stable, readable, appropriate
+// for small datasets (max ~12 subjects)
+
+function insertionSort(subjects) {
+  const arr = [...subjects]; // work on a copy
+
+  for (let i = 1; i < arr.length; i++) {
+    const current = arr[i];
+    let j = i - 1;
+
+    // Move subjects with lower urgency score one position right
+    while (j >= 0 && arr[j].urgencyScore < current.urgencyScore) {
+      arr[j + 1] = arr[j];
+      j--;
+    }
+
+    arr[j + 1] = current;
+  }
+
+  return arr; // sorted highest urgency first
+}
+
+// ========================
+// RECALCULATE ALL SCORES
+// ========================
+// Runs urgency formula on every subject
+// then sorts by insertion sort
+// Call this whenever data changes
+
+function recalculateAndSort() {
+  // Step 1: Calculate urgency score for every subject
+  appData.subjects.forEach(subject => {
+    subject.urgencyScore    = calculateUrgencyScore(subject);
+    subject.averageConfidence = getAverageConfidence(subject.topics);
+    subject.riskLevel       = getRiskLevel(subject.urgencyScore);
+  });
+
+  // Step 2: Sort using insertion sort (highest urgency first)
+  appData.subjects = insertionSort(appData.subjects);
+
+  // Step 3: Save updated data
+  saveToStorage();
+
+  console.log('🔄 Recalculated and sorted:', 
+    appData.subjects.map(s => `${s.name}: ${s.urgencyScore}`));
+}
+
+// ========================
+// OVERALL READINESS SCORE
+// ========================
+// Credit-weighted inverse of average urgency scores
+// Higher urgency across subjects = lower readiness
+
+function calculateReadiness() {
+  if (appData.subjects.length === 0) return 0;
+
+  let totalWeight  = 0;
+  let weightedSum  = 0;
+
+  appData.subjects.forEach(subject => {
+    const weight = subject.credits;
+    weightedSum  += subject.urgencyScore * weight;
+    totalWeight  += weight;
+  });
+
+  const avgUrgency = totalWeight > 0 ? weightedSum / totalWeight : 0;
+
+  // Readiness is inverse of urgency
+  return Math.round(100 - avgUrgency);
+}
+
+// ========================
+// TOP RECOMMENDATION
+// ========================
+// Finds rank 1 subject + weakest topic
+// Returns a recommendation object
+
+function getTopRecommendation() {
+  if (appData.subjects.length === 0) return null;
+
+  // Rank 1 subject is first after sort
+  const topSubject = appData.subjects[0];
+  if (!topSubject) return null;
+
+  // Find weakest topic (lowest confidence, prioritise not started notes)
+  let weakestTopic = null;
+  if (topSubject.topics && topSubject.topics.length > 0) {
+    const sorted = [...topSubject.topics].sort((a, b) => {
+      if (a.confidence !== b.confidence) {
+        return a.confidence - b.confidence;
+      }
+      // Tiebreak: not started > in progress > done
+      const notesPriority = { not_started: 0, in_progress: 1, done: 2 };
+      return notesPriority[a.notesStatus] - notesPriority[b.notesStatus];
+    });
+    weakestTopic = sorted[0];
+  }
+
+  // Days until test
+  const daysScore = calculateDaysScore(topSubject.testDate);
+  let daysText = '';
+  if (topSubject.testDate) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const test = new Date(topSubject.testDate);
+    test.setHours(0, 0, 0, 0);
+    const days = Math.ceil((test - today) / (1000 * 60 * 60 * 24));
+    daysText = days <= 0 ? 'Test is today!' : `${days} day${days !== 1 ? 's' : ''} until test`;
+  } else {
+    daysText = 'No test date set';
+  }
+
+  return {
+    subject: topSubject,
+    topic: weakestTopic,
+    daysText: daysText,
+    riskLevel: topSubject.riskLevel
+  };
+}
+
+// ========================
+// DAYS UNTIL TEST HELPER
+// ========================
+function getDaysUntilTest(testDate) {
+  if (!testDate) return null;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const test = new Date(testDate);
+  test.setHours(0, 0, 0, 0);
+  return Math.ceil((test - today) / (1000 * 60 * 60 * 24));
+}
+
+function formatDaysText(testDate) {
+  const days = getDaysUntilTest(testDate);
+  if (days === null) return 'No date set';
+  if (days < 0) return `${Math.abs(days)} days ago`;
+  if (days === 0) return 'Today!';
+  if (days === 1) return 'Tomorrow!';
+  return `${days} days`;
+}
+
+// ========================
+// NOTES STATUS HELPERS
+// ========================
+function notesStatusLabel(status) {
+  const labels = {
+    not_started: 'Not Started',
+    in_progress: 'In Progress',
+    done: 'Done'
+  };
+  return labels[status] || 'Not Started';
+}
+
+function notesStatusBadgeClass(status) {
+  const classes = {
+    not_started: 'badge-gray',
+    in_progress: 'badge-blue',
+    done: 'badge-green'
+  };
+  return classes[status] || 'badge-gray';
+}
+
+// ========================
+// VIEW NAVIGATION
+// ========================
+function showView(viewName) {
   document.querySelectorAll('.view').forEach(v => {
     v.classList.remove('active');
   });
   document.getElementById('view-' + viewName).classList.add('active');
+  appData.appState.currentView = viewName;
+  saveToStorage();
+}
+
+function openModal(modalId) {
+  document.getElementById(modalId).classList.add('open');
 }
 
 function closeModal(modalId) {
   document.getElementById(modalId).classList.remove('open');
 }
 
-function openModal(modalId) {
-  document.getElementById(modalId).classList.add('open');
+// ========================
+// INITIALISE APP
+// ========================
+function initApp() {
+  recalculateAndSort();
+
+  // If setup is complete, go straight to dashboard
+  if (appData.appState.setupComplete && appData.subjects.length > 0) {
+    showView('dashboard');
+  } else {
+    showView('setup');
+  }
+
+  console.log('🚀 Study Triage initialised');
+  console.log('📚 Subjects loaded:', appData.subjects.length);
 }
+
+// Run on page load
+initApp();
   </script>
 
 </body>
