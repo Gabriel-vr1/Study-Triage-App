@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Study Triage</title>
   <style>
-    /* ============================================
+ /* ============================================
    STUDY TRIAGE — DESIGN SYSTEM
    Colour Palette:
    - Background:    #0F1117
@@ -518,15 +518,6 @@ select.form-input {
   overflow-x: auto;
 }
 
-.timeline-title {
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: #8B8FA8;
-  margin-bottom: 20px;
-}
-
 .timeline-track {
   position: relative;
   height: 60px;
@@ -775,6 +766,20 @@ select.form-input {
 }
 
 /* ========================
+   ERROR MESSAGE
+======================== */
+.error-msg {
+  background: rgba(247,92,92,0.1);
+  border: 1px solid rgba(247,92,92,0.3);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #F75C5C;
+  font-size: 13px;
+  margin-bottom: 16px;
+  display: none;
+}
+
+/* ========================
    SCROLLBAR
 ======================== */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -808,148 +813,107 @@ select.form-input {
 }
 .gap-8  { gap: 8px; }
 .gap-12 { gap: 12px; }
-  </style>
+</style>
 </head>
 <body>
+
 <!-- ========================
-     MODAL: ADD TOPIC
+     MODAL: ADD SUBJECT
 ========================= -->
-<div id="modal-add-topic" class="modal-overlay">
+<div id="modal-add-subject" class="modal-overlay">
   <div class="modal">
-    <h2 id="modal-add-topic-title">Add Topic</h2>
+    <h2>Add Subject</h2>
 
+    <!-- Error message -->
+    <div id="modal-subject-error" class="error-msg"></div>
+
+    <!-- Subject name -->
     <div class="form-group">
-      <label class="form-label">Topic Name</label>
-      <input 
-        type="text" 
-        class="form-input" 
-        id="add-topic-name"
-        placeholder="e.g. Integration"
+      <label class="form-label">Subject Name</label>
+      <input
+        type="text"
+        id="modal-subject-name"
+        class="form-input"
+        placeholder="e.g. Mathematics"
       >
     </div>
 
-    <div class="form-group">
-      <label class="form-label">
-        Confidence Level: 
-        <span id="add-topic-conf-display" class="text-blue">3</span>/5
-      </label>
-      <div class="slider-container">
-        <span class="text-muted text-small">1</span>
-        <input 
-          type="range" 
-          class="slider" 
-          id="add-topic-confidence"
-          min="1" max="5" value="3"
-          oninput="document.getElementById('add-topic-conf-display')
-                   .textContent = this.value"
-        >
-        <span class="text-muted text-small">5</span>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">Notes Status</label>
-      <select class="form-input" id="add-topic-notes">
-        <option value="not_started">Not Started</option>
-        <option value="in_progress">In Progress</option>
-        <option value="done">Done</option>
-      </select>
-    </div>
-
-    <div id="add-topic-error" style="
-      display:none; 
-      color:#F75C5C; 
-      font-size:13px; 
-      margin-bottom:12px;
-    "></div>
-
-    <div class="modal-footer">
-      <button 
-        class="btn btn-secondary" 
-        onclick="closeModal('modal-add-topic')"
-      >
-        Cancel
-      </button>
-      <button class="btn btn-primary" onclick="saveTopicFromModal()">
-        Save Topic
-      </button>
-    </div>
-  </div>
-</div>
-    </div>
-
+    <!-- Credits + Pass Mark -->
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Credit Value</label>
-        <select class="form-input" id="modal-subject-credits">
-          <option value="4">4 Credits</option>
-          <option value="8">8 Credits</option>
-          <option value="16" selected>16 Credits</option>
-          <option value="32">32 Credits</option>
+        <select id="modal-subject-credits" class="form-input">
+          <option value="4">4 credits</option>
+          <option value="8">8 credits</option>
+          <option value="16" selected>16 credits</option>
+          <option value="32">32 credits</option>
         </select>
       </div>
       <div class="form-group">
-        <label class="form-label">Test / Exam Date</label>
-        <input 
-          type="date" 
-          class="form-input" 
-          id="modal-subject-testdate"
-        >
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Current Grade % (optional)</label>
-        <input 
-          type="number" 
-          class="form-input" 
-          id="modal-subject-grade"
-          placeholder="e.g. 54"
-          min="0" max="100"
-        >
-      </div>
-      <div class="form-group">
-        <label class="form-label">Pass Mark %</label>
-        <input 
-          type="number" 
-          class="form-input" 
+        <label class="form-label">Pass Mark (%)</label>
+        <input
+          type="number"
           id="modal-subject-passmark"
+          class="form-input"
           placeholder="50"
           value="50"
-          min="0" max="100"
+          min="0"
+          max="100"
         >
       </div>
     </div>
 
-    <!-- Error message -->
-    <div id="modal-subject-error" style="
-      display:none; 
-      color:#F75C5C; 
-      font-size:13px; 
-      margin-bottom:12px;
-    "></div>
+    <!-- Test Date + Current Grade -->
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Test / Exam Date</label>
+        <input
+          type="date"
+          id="modal-subject-testdate"
+          class="form-input"
+        >
+      </div>
+      <div class="form-group">
+        <label class="form-label">Current Grade (%) — optional</label>
+        <input
+          type="number"
+          id="modal-subject-grade"
+          class="form-input"
+          placeholder="Leave blank if unknown"
+          min="0"
+          max="100"
+        >
+      </div>
+    </div>
 
-    <!-- TOPICS SECTION -->
-    <div class="divider"></div>
-    <div class="section-header">
-      <span class="section-title">Topics</span>
+    <!-- Topics section -->
+    <div class="divider" style="margin: 20px 0;"></div>
+    <div class="section-header" style="margin-bottom:12px;">
+      <span class="section-title">Topics (optional)</span>
       <button class="btn btn-secondary btn-sm" onclick="addTopicRow()">
         + Add Topic
       </button>
     </div>
 
-    <div id="modal-topics-list">
-      <!-- Topic rows added dynamically -->
+    <!-- Topics empty state -->
+    <div id="modal-topics-empty" style="
+      text-align: center;
+      padding: 20px;
+      color: #8B8FA8;
+      font-size: 13px;
+      border: 1px dashed #2A2D3A;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    ">
+      No topics yet — you can add them now or after saving.
     </div>
 
-    <div id="modal-topics-empty" class="text-muted text-small mt-8">
-      No topics added yet. Click "+ Add Topic" to add topics for this subject.
-    </div>
+    <!-- Topics list renders here -->
+    <div id="modal-topics-list"></div>
 
     <div class="modal-footer">
-      <button 
-        class="btn btn-secondary" 
+      <button
+        class="btn btn-secondary"
         onclick="closeModal('modal-add-subject'); clearSubjectModal();"
       >
         Cancel
@@ -960,6 +924,77 @@ select.form-input {
     </div>
   </div>
 </div>
+
+
+<!-- ========================
+     MODAL: ADD TOPIC
+     (to an existing subject)
+========================= -->
+<div id="modal-add-topic" class="modal-overlay">
+  <div class="modal">
+    <h2 id="modal-add-topic-title">Add Topic</h2>
+
+    <!-- Error message -->
+    <div id="add-topic-error" class="error-msg"></div>
+
+    <!-- Topic name -->
+    <div class="form-group">
+      <label class="form-label">Topic Name</label>
+      <input
+        type="text"
+        id="add-topic-name"
+        class="form-input"
+        placeholder="e.g. Integration"
+      >
+    </div>
+
+    <!-- Confidence slider -->
+    <div class="form-group">
+      <label class="form-label">
+        Confidence Level:
+        <span id="add-topic-conf-display" class="text-blue">3</span> / 5
+      </label>
+      <div class="slider-container">
+        <span class="text-muted text-small">1</span>
+        <input
+          type="range"
+          class="slider"
+          id="add-topic-confidence"
+          min="1" max="5" value="3"
+          oninput="document.getElementById('add-topic-conf-display').textContent = this.value"
+        >
+        <span class="text-muted text-small">5</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-top:6px;">
+        <span class="text-small text-red">No idea</span>
+        <span class="text-small text-green">Very confident</span>
+      </div>
+    </div>
+
+    <!-- Notes status -->
+    <div class="form-group">
+      <label class="form-label">Notes Status</label>
+      <select id="add-topic-notes" class="form-input">
+        <option value="not_started">Not Started</option>
+        <option value="in_progress">In Progress</option>
+        <option value="done">Done</option>
+      </select>
+    </div>
+
+    <div class="modal-footer">
+      <button
+        class="btn btn-secondary"
+        onclick="closeModal('modal-add-topic')"
+      >
+        Cancel
+      </button>
+      <button class="btn btn-primary" onclick="saveTopicFromModal()">
+        Save Topic
+      </button>
+    </div>
+  </div>
+</div>
+
 
 <!-- ========================
      VIEW 1: SETUP
@@ -1038,9 +1073,7 @@ select.form-input {
     </div>
 
     <!-- Subjects render here -->
-    <div id="setup-subjects-list">
-      <!-- Populated by renderSetupSubjects() -->
-    </div>
+    <div id="setup-subjects-list"></div>
 
     <!-- Empty state -->
     <div id="setup-empty-state">
@@ -1071,6 +1104,7 @@ select.form-input {
   </div>
 </div>
 
+
 <!-- ========================
      VIEW 2: DASHBOARD
 ========================= -->
@@ -1083,8 +1117,7 @@ select.form-input {
     <div class="navbar-nav">
       <button class="nav-btn" onclick="showView('setup')">Setup</button>
       <button class="nav-btn active">Dashboard</button>
-      <button class="nav-btn" 
-        onclick="showView('transparency')">AI Transparency</button>
+      <button class="nav-btn" onclick="showView('transparency')">AI Transparency</button>
     </div>
   </nav>
   <div class="page-container">
@@ -1102,8 +1135,7 @@ select.form-input {
           Some subjects need attention. Check your amber cards.
         </div>
         <div class="progress-bar-track">
-          <div class="progress-bar-fill score-medium" 
-               style="width: 67%"></div>
+          <div class="progress-bar-fill score-medium" style="width: 67%"></div>
         </div>
       </div>
     </div>
@@ -1142,8 +1174,7 @@ select.form-input {
       <button class="btn btn-primary btn-sm">↻ Recalculate</button>
     </div>
 
-    <div class="subject-card risk-red" 
-         onclick="showView('deepdive')">
+    <div class="subject-card risk-red" onclick="showView('deepdive')">
       <div class="subject-card-header">
         <span class="subject-card-title">Mathematics</span>
         <span class="badge badge-red">Critical</span>
@@ -1230,24 +1261,28 @@ select.form-input {
       </div>
     </div>
 
-    <!-- Timeline placeholder -->
+    <!-- Timeline -->
     <div class="timeline-section">
-      <div class="timeline-title">Semester Timeline</div>
+      <div class="timeline-title" style="
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #8B8FA8;
+        margin-bottom: 20px;
+      ">Semester Timeline</div>
       <div class="timeline-track">
         <div class="timeline-line"></div>
         <div class="timeline-marker" style="left: 10%">
-          <div class="timeline-dot" 
-               style="background:#F75C5C"></div>
+          <div class="timeline-dot" style="background:#F75C5C"></div>
           <div class="timeline-marker-label">Mathematics</div>
         </div>
         <div class="timeline-marker" style="left: 40%">
-          <div class="timeline-dot" 
-               style="background:#F5A623"></div>
+          <div class="timeline-dot" style="background:#F5A623"></div>
           <div class="timeline-marker-label">Comp Sci</div>
         </div>
         <div class="timeline-marker" style="left: 85%">
-          <div class="timeline-dot" 
-               style="background:#2DD4A0"></div>
+          <div class="timeline-dot" style="background:#2DD4A0"></div>
           <div class="timeline-marker-label">English</div>
         </div>
       </div>
@@ -1255,6 +1290,7 @@ select.form-input {
 
   </div>
 </div>
+
 
 <!-- ========================
      VIEW 3: DEEP DIVE
@@ -1266,8 +1302,7 @@ select.form-input {
       <span class="navbar-title">Study <span>Triage</span></span>
     </div>
     <div class="navbar-nav">
-      <button class="nav-btn" 
-        onclick="showView('dashboard')">← Dashboard</button>
+      <button class="nav-btn" onclick="showView('dashboard')">← Dashboard</button>
     </div>
   </nav>
   <div class="page-container">
@@ -1340,6 +1375,7 @@ select.form-input {
   </div>
 </div>
 
+
 <!-- ========================
      VIEW 4: TRANSPARENCY
 ========================= -->
@@ -1350,8 +1386,7 @@ select.form-input {
       <span class="navbar-title">Study <span>Triage</span></span>
     </div>
     <div class="navbar-nav">
-      <button class="nav-btn" 
-        onclick="showView('dashboard')">← Dashboard</button>
+      <button class="nav-btn" onclick="showView('dashboard')">← Dashboard</button>
     </div>
   </nav>
   <div class="page-container">
@@ -1368,14 +1403,12 @@ select.form-input {
   </div>
 </div>
 
-  <script>
-  // ============================================
+
+<script>
+// ============================================
 // STUDY TRIAGE — DATA MODEL & STORAGE
 // ============================================
 
-// ========================
-// DEFAULT APP STATE
-// ========================
 const DEFAULT_STATE = {
   profile: {
     name: '',
@@ -1390,10 +1423,6 @@ const DEFAULT_STATE = {
   }
 };
 
-// ========================
-// LIVE APP STATE
-// Loaded from localStorage or defaulted
-// ========================
 let appData = loadFromStorage();
 
 // ========================
@@ -1485,7 +1514,7 @@ function createTopic(name, confidence, notesStatus, coveredInClass) {
     id: generateId(),
     name: name,
     confidence: parseInt(confidence),
-    notesStatus: notesStatus,   // 'not_started' | 'in_progress' | 'done'
+    notesStatus: notesStatus,
     coveredInClass: coveredInClass === true || coveredInClass === 'true'
   };
 }
@@ -1555,8 +1584,6 @@ function markTopicRevised(subjectId, topicId) {
 // ========================
 // URGENCY SCORE FORMULA
 // ========================
-// Four components, each scored 0-100
-// then weighted into a final score 0-100
 
 function calculateDaysScore(testDate) {
   if (!testDate) return 50;
@@ -1566,13 +1593,12 @@ function calculateDaysScore(testDate) {
   test.setHours(0, 0, 0, 0);
   const days = Math.ceil((test - today) / (1000 * 60 * 60 * 24));
 
-  // Urgency bands — sharply increasing risk near test date
-  if (days <= 0)  return 100; // test is today or past
-  if (days <= 3)  return 90;  // critical
-  if (days <= 7)  return 75;  // very urgent
-  if (days <= 14) return 55;  // urgent
-  if (days <= 30) return 35;  // moderate
-  return 15;                  // comfortable
+  if (days <= 0)  return 100;
+  if (days <= 3)  return 90;
+  if (days <= 7)  return 75;
+  if (days <= 14) return 55;
+  if (days <= 30) return 35;
+  return 15;
 }
 
 function calculateCreditScore(credits) {
@@ -1585,29 +1611,24 @@ function calculateCreditScore(credits) {
 function calculateConfidenceScore(topics) {
   if (!topics || topics.length === 0) return 50;
   const avg = topics.reduce((sum, t) => sum + t.confidence, 0) / topics.length;
-  // Invert: low confidence = high urgency score
   return ((5 - avg) / 4) * 100;
 }
 
 function calculateGradeRiskScore(currentGrade, passMark) {
   if (currentGrade === null || currentGrade === undefined) return 50;
   const pm = passMark || 50;
-  if (currentGrade >= pm + 20) return 0;   // comfortably passing
-  if (currentGrade >= pm)      return 30;  // passing but close
-  if (currentGrade >= pm - 20) return 80;  // failing
-  return 100;                              // critically failing
+  if (currentGrade >= pm + 20) return 0;
+  if (currentGrade >= pm)      return 30;
+  if (currentGrade >= pm - 20) return 80;
+  return 100;
 }
 
 function calculateUrgencyScore(subject) {
   const daysScore      = calculateDaysScore(subject.testDate);
   const creditScore    = calculateCreditScore(subject.credits);
   const confidScore    = calculateConfidenceScore(subject.topics);
-  const gradeRiskScore = calculateGradeRiskScore(
-                           subject.currentGrade, 
-                           subject.passMark
-                         );
+  const gradeRiskScore = calculateGradeRiskScore(subject.currentGrade, subject.passMark);
 
-  // Weighted formula — weights sum to 1.0
   const score = (daysScore      * 0.40) +
                 (creditScore    * 0.20) +
                 (confidScore    * 0.25) +
@@ -1636,13 +1657,12 @@ function getAverageConfidence(topics) {
 // for small datasets (max ~12 subjects)
 
 function insertionSort(subjects) {
-  const arr = [...subjects]; // work on a copy
+  const arr = [...subjects];
 
   for (let i = 1; i < arr.length; i++) {
     const current = arr[i];
     let j = i - 1;
 
-    // Move subjects with lower urgency score one position right
     while (j >= 0 && arr[j].urgencyScore < current.urgencyScore) {
       arr[j + 1] = arr[j];
       j--;
@@ -1651,28 +1671,21 @@ function insertionSort(subjects) {
     arr[j + 1] = current;
   }
 
-  return arr; // sorted highest urgency first
+  return arr;
 }
 
 // ========================
 // RECALCULATE ALL SCORES
 // ========================
-// Runs urgency formula on every subject
-// then sorts by insertion sort
-// Call this whenever data changes
 
 function recalculateAndSort() {
-  // Step 1: Calculate urgency score for every subject
   appData.subjects.forEach(subject => {
-    subject.urgencyScore    = calculateUrgencyScore(subject);
+    subject.urgencyScore      = calculateUrgencyScore(subject);
     subject.averageConfidence = getAverageConfidence(subject.topics);
-    subject.riskLevel       = getRiskLevel(subject.urgencyScore);
+    subject.riskLevel         = getRiskLevel(subject.urgencyScore);
   });
 
-  // Step 2: Sort using insertion sort (highest urgency first)
   appData.subjects = insertionSort(appData.subjects);
-
-  // Step 3: Save updated data
   saveToStorage();
 
   console.log('🔄 Recalculated and sorted:', 
@@ -1682,14 +1695,12 @@ function recalculateAndSort() {
 // ========================
 // OVERALL READINESS SCORE
 // ========================
-// Credit-weighted inverse of average urgency scores
-// Higher urgency across subjects = lower readiness
 
 function calculateReadiness() {
   if (appData.subjects.length === 0) return 0;
 
-  let totalWeight  = 0;
-  let weightedSum  = 0;
+  let totalWeight = 0;
+  let weightedSum = 0;
 
   appData.subjects.forEach(subject => {
     const weight = subject.credits;
@@ -1698,40 +1709,31 @@ function calculateReadiness() {
   });
 
   const avgUrgency = totalWeight > 0 ? weightedSum / totalWeight : 0;
-
-  // Readiness is inverse of urgency
   return Math.round(100 - avgUrgency);
 }
 
 // ========================
 // TOP RECOMMENDATION
 // ========================
-// Finds rank 1 subject + weakest topic
-// Returns a recommendation object
 
 function getTopRecommendation() {
   if (appData.subjects.length === 0) return null;
 
-  // Rank 1 subject is first after sort
   const topSubject = appData.subjects[0];
   if (!topSubject) return null;
 
-  // Find weakest topic (lowest confidence, prioritise not started notes)
   let weakestTopic = null;
   if (topSubject.topics && topSubject.topics.length > 0) {
     const sorted = [...topSubject.topics].sort((a, b) => {
       if (a.confidence !== b.confidence) {
         return a.confidence - b.confidence;
       }
-      // Tiebreak: not started > in progress > done
       const notesPriority = { not_started: 0, in_progress: 1, done: 2 };
       return notesPriority[a.notesStatus] - notesPriority[b.notesStatus];
     });
     weakestTopic = sorted[0];
   }
 
-  // Days until test
-  const daysScore = calculateDaysScore(topSubject.testDate);
   let daysText = '';
   if (topSubject.testDate) {
     const today = new Date();
@@ -1755,6 +1757,7 @@ function getTopRecommendation() {
 // ========================
 // DAYS UNTIL TEST HELPER
 // ========================
+
 function getDaysUntilTest(testDate) {
   if (!testDate) return null;
   const today = new Date();
@@ -1776,6 +1779,7 @@ function formatDaysText(testDate) {
 // ========================
 // NOTES STATUS HELPERS
 // ========================
+
 function notesStatusLabel(status) {
   const labels = {
     not_started: 'Not Started',
@@ -1797,6 +1801,7 @@ function notesStatusBadgeClass(status) {
 // ========================
 // VIEW NAVIGATION
 // ========================
+
 function showView(viewName) {
   document.querySelectorAll('.view').forEach(v => {
     v.classList.remove('active');
@@ -1817,11 +1822,14 @@ function closeModal(modalId) {
 // ========================
 // INITIALISE APP
 // ========================
+
 function initApp() {
   recalculateAndSort();
+  loadProfileInputs();
+  renderSetupSubjects();
 
-  // If setup is complete, go straight to dashboard
   if (appData.appState.setupComplete && appData.subjects.length > 0) {
+    if (typeof renderDashboard === 'function') renderDashboard();
     showView('dashboard');
   } else {
     showView('setup');
@@ -1831,18 +1839,20 @@ function initApp() {
   console.log('📚 Subjects loaded:', appData.subjects.length);
 }
 
-// Run on page load
 initApp();
+
+
 // ============================================
 // STAGE 4 — SETUP VIEW LOGIC
 // ============================================
 
-// Tracks topics being built inside the modal
+// Tracks topics being built inside the add-subject modal
 let modalTopics = [];
 
 // ========================
 // PROFILE UPDATE
 // ========================
+
 function updateProfile() {
   appData.profile.name     = document.getElementById('input-student-name').value;
   appData.profile.semester = document.getElementById('input-semester').value;
@@ -1858,13 +1868,14 @@ function updateStudyHours(value) {
 // ========================
 // RENDER SETUP SUBJECTS
 // ========================
+
 function renderSetupSubjects() {
   const list       = document.getElementById('setup-subjects-list');
   const emptyState = document.getElementById('setup-empty-state');
   const launchBtn  = document.getElementById('setup-launch-btn');
 
   if (appData.subjects.length === 0) {
-    list.innerHTML       = '';
+    list.innerHTML           = '';
     emptyState.style.display = 'block';
     launchBtn.style.display  = 'none';
     return;
@@ -1874,30 +1885,24 @@ function renderSetupSubjects() {
   launchBtn.style.display  = appData.subjects.length >= 2 ? 'block' : 'none';
 
   list.innerHTML = appData.subjects.map(subject => {
-    const days     = getDaysUntilTest(subject.testDate);
-    const daysText = formatDaysText(subject.testDate);
+    const daysText  = formatDaysText(subject.testDate);
     const riskClass = {
       red: 'badge-red', amber: 'badge-amber', green: 'badge-green'
     }[subject.riskLevel] || 'badge-gray';
 
     return `
-      <div class="subject-card risk-${subject.riskLevel}" 
-           style="cursor:default;">
+      <div class="subject-card risk-${subject.riskLevel}" style="cursor:default;">
         <div class="subject-card-header">
           <span class="subject-card-title">${subject.name}</span>
           <div class="flex gap-8">
             <button 
               class="btn btn-secondary btn-sm"
               onclick="openAddTopicModal('${subject.id}')"
-            >
-              + Add Topic
-            </button>
+            >+ Add Topic</button>
             <button 
               class="btn btn-danger btn-sm"
               onclick="handleDeleteSubject('${subject.id}')"
-            >
-              Delete
-            </button>
+            >Delete</button>
           </div>
         </div>
 
@@ -1926,7 +1931,6 @@ function renderSetupSubjects() {
           </div>
         </div>
 
-        <!-- Topics list -->
         ${subject.topics.length > 0 ? `
           <div style="margin-top:14px; border-top:1px solid #2A2D3A; padding-top:14px;">
             ${subject.topics.map(topic => `
@@ -1946,9 +1950,7 @@ function renderSetupSubjects() {
                   <button 
                     class="btn btn-danger btn-sm"
                     onclick="handleDeleteTopic('${subject.id}', '${topic.id}')"
-                  >
-                    ✕
-                  </button>
+                  >✕</button>
                 </div>
               </div>
             `).join('')}
@@ -1964,8 +1966,10 @@ function renderSetupSubjects() {
 }
 
 // ========================
-// SUBJECT MODAL
+// ADD SUBJECT MODAL — TOPIC ROWS
+// (topics added while creating a new subject)
 // ========================
+
 function clearSubjectModal() {
   document.getElementById('modal-subject-name').value     = '';
   document.getElementById('modal-subject-credits').value  = '16';
@@ -1994,15 +1998,15 @@ function renderModalTopics() {
   const empty = document.getElementById('modal-topics-empty');
 
   if (modalTopics.length === 0) {
-    list.innerHTML        = '';
-    empty.style.display   = 'block';
+    list.innerHTML      = '';
+    empty.style.display = 'block';
     return;
   }
 
   empty.style.display = 'none';
 
   list.innerHTML = modalTopics.map((topic, index) => `
-    <div class="card-sm" style="margin-bottom:10px;">
+    <div class="card-sm" style="margin-bottom:10px; background:#0F1117;">
       <div class="form-row-3" style="margin-bottom:10px;">
         <div class="form-group" style="margin-bottom:0; grid-column: span 2;">
           <label class="form-label">Topic Name</label>
@@ -2020,26 +2024,18 @@ function renderModalTopics() {
             class="form-input"
             onchange="updateModalTopic(${index}, 'notesStatus', this.value)"
           >
-            <option value="not_started" ${
-              topic.notesStatus === 'not_started' ? 'selected' : ''
-            }>Not Started</option>
-            <option value="in_progress" ${
-              topic.notesStatus === 'in_progress' ? 'selected' : ''
-            }>In Progress</option>
-            <option value="done" ${
-              topic.notesStatus === 'done' ? 'selected' : ''
-            }>Done</option>
+            <option value="not_started" ${topic.notesStatus === 'not_started' ? 'selected' : ''}>Not Started</option>
+            <option value="in_progress" ${topic.notesStatus === 'in_progress' ? 'selected' : ''}>In Progress</option>
+            <option value="done"        ${topic.notesStatus === 'done'        ? 'selected' : ''}>Done</option>
           </select>
         </div>
       </div>
 
       <div class="flex-between">
-        <div>
+        <div style="flex:1;">
           <label class="form-label">
             Confidence: 
-            <span id="conf-label-${index}" class="text-blue">
-              ${topic.confidence}/5
-            </span>
+            <span id="conf-label-${index}" class="text-blue">${topic.confidence}/5</span>
           </label>
           <div class="slider-container">
             <span class="text-muted text-small">1</span>
@@ -2048,20 +2044,17 @@ function renderModalTopics() {
               class="slider" 
               min="1" max="5" 
               value="${topic.confidence}"
-              oninput="updateModalTopic(${index}, 'confidence', 
-                       parseInt(this.value)); 
-                       document.getElementById('conf-label-${index}')
-                       .textContent = this.value + '/5';"
+              oninput="updateModalTopic(${index}, 'confidence', parseInt(this.value));
+                       document.getElementById('conf-label-${index}').textContent = this.value + '/5';"
             >
             <span class="text-muted text-small">5</span>
           </div>
         </div>
         <button 
           class="btn btn-danger btn-sm"
+          style="margin-left:16px;"
           onclick="removeModalTopic(${index})"
-        >
-          Remove
-        </button>
+        >Remove</button>
       </div>
     </div>
   `).join('');
@@ -2088,13 +2081,13 @@ function saveSubjectFromModal() {
 
   // Validation
   if (!name) {
-    errorEl.textContent     = 'Please enter a subject name.';
-    errorEl.style.display   = 'block';
+    errorEl.textContent   = 'Please enter a subject name.';
+    errorEl.style.display = 'block';
     return;
   }
   if (!testDate) {
-    errorEl.textContent     = 'Please select a test date.';
-    errorEl.style.display   = 'block';
+    errorEl.textContent   = 'Please select a test date.';
+    errorEl.style.display = 'block';
     return;
   }
 
@@ -2103,7 +2096,7 @@ function saveSubjectFromModal() {
   // Create subject
   const subject = createSubject(name, credits, testDate, grade, passMark);
 
-  // Attach topics
+  // Attach any topics added inline
   modalTopics.forEach(t => {
     if (t.name.trim()) {
       subject.topics.push(
@@ -2112,21 +2105,19 @@ function saveSubjectFromModal() {
     }
   });
 
-  // Add to app data
   addSubject(subject);
   recalculateAndSort();
 
-  // Close and refresh
   closeModal('modal-add-subject');
   clearSubjectModal();
   renderSetupSubjects();
 }
 
 // ========================
-// ADD TOPIC TO EXISTING SUBJECT
+// ADD TOPIC MODAL
+// (adding a topic to an already-saved subject)
 // ========================
 
-// Tracks which subject we're adding a topic to
 let addTopicTargetSubjectId = null;
 
 function openAddTopicModal(subjectId) {
@@ -2134,9 +2125,15 @@ function openAddTopicModal(subjectId) {
   const subject = getSubjectById(subjectId);
   if (!subject) return;
 
-  // Reuse the subject modal just for topics
   document.getElementById('modal-add-topic-title').textContent =
     'Add Topic to ' + subject.name;
+
+  // Reset fields
+  document.getElementById('add-topic-name').value       = '';
+  document.getElementById('add-topic-confidence').value = '3';
+  document.getElementById('add-topic-conf-display').textContent = '3';
+  document.getElementById('add-topic-notes').value      = 'not_started';
+  document.getElementById('add-topic-error').style.display = 'none';
 
   openModal('modal-add-topic');
 }
@@ -2159,12 +2156,6 @@ function saveTopicFromModal() {
   addTopicToSubject(addTopicTargetSubjectId, topic);
   recalculateAndSort();
 
-  // Reset fields
-  document.getElementById('add-topic-name').value       = '';
-  document.getElementById('add-topic-confidence').value = '3';
-  document.getElementById('add-topic-conf-display').textContent = '3';
-  document.getElementById('add-topic-notes').value      = 'not_started';
-
   closeModal('modal-add-topic');
   renderSetupSubjects();
 }
@@ -2172,6 +2163,7 @@ function saveTopicFromModal() {
 // ========================
 // DELETE HANDLERS
 // ========================
+
 function handleDeleteSubject(subjectId) {
   if (deleteSubject(subjectId)) {
     recalculateAndSort();
@@ -2190,46 +2182,31 @@ function handleDeleteTopic(subjectId, topicId) {
 // ========================
 // LAUNCH DASHBOARD
 // ========================
+
 function launchDashboard() {
   appData.appState.setupComplete = true;
   saveToStorage();
   recalculateAndSort();
-  renderDashboard();
+  if (typeof renderDashboard === 'function') renderDashboard();
   showView('dashboard');
 }
 
 // ========================
 // LOAD PROFILE ON INIT
 // ========================
+
 function loadProfileInputs() {
   const nameEl  = document.getElementById('input-student-name');
   const semEl   = document.getElementById('input-semester');
   const hoursEl = document.getElementById('input-study-hours');
   const dispEl  = document.getElementById('hours-display');
 
-  if (nameEl)  nameEl.value  = appData.profile.name     || '';
-  if (semEl)   semEl.value   = appData.profile.semester  || '';
-  if (hoursEl) hoursEl.value = appData.profile.studyHoursPerDay || 4;
-  if (dispEl)  dispEl.textContent = appData.profile.studyHoursPerDay || 4;
+  if (nameEl)  nameEl.value        = appData.profile.name     || '';
+  if (semEl)   semEl.value         = appData.profile.semester  || '';
+  if (hoursEl) hoursEl.value       = appData.profile.studyHoursPerDay || 4;
+  if (dispEl)  dispEl.textContent  = appData.profile.studyHoursPerDay || 4;
 }
-function initApp() {
-  recalculateAndSort();
-  loadProfileInputs();
-  renderSetupSubjects();
-
-  if (appData.appState.setupComplete && appData.subjects.length > 0) {
-    renderDashboard();
-    showView('dashboard');
-  } else {
-    showView('setup');
-  }
-
-  console.log('🚀 Study Triage initialised');
-  console.log('📚 Subjects loaded:', appData.subjects.length);
-}
-  </script>
-  
+</script>
 
 </body>
-
 </html>
