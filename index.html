@@ -1,11 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study Triage</title>
+  <style>
+    /* STYLES COMING IN STAGE 2 */
+    body { margin: 0; background: #0F1117; color: white; 
+           font-family: sans-serif; }
+    .view { display: none; padding: 20px; }
+    .view.active { display: block; }
+  </style>
 </head>
 <body>
-    
+
+  <!-- ========================
+       VIEW 1: SETUP
+  ========================= -->
+  <div id="view-setup" class="view active">
+    <h1>Study Triage — Setup</h1>
+    <p>Setup view placeholder</p>
+    <button onclick="showView('dashboard')">Go to Dashboard</button>
+  </div>
+
+  <!-- ========================
+       VIEW 2: DASHBOARD
+  ========================= -->
+  <div id="view-dashboard" class="view">
+    <h1>Study Triage — Dashboard</h1>
+    <p>Dashboard view placeholder</p>
+    <button onclick="showView('setup')">Back to Setup</button>
+    <button onclick="showView('deepdive')">Go to Deep Dive</button>
+  </div>
+
+  <!-- ========================
+       VIEW 3: DEEP DIVE
+  ========================= -->
+  <div id="view-deepdive" class="view">
+    <h1>Study Triage — Deep Dive</h1>
+    <p>Deep dive view placeholder</p>
+    <button onclick="showView('dashboard')">Back to Dashboard</button>
+  </div>
+
+  <!-- ========================
+       VIEW 4: TRANSPARENCY
+  ========================= -->
+  <div id="view-transparency" class="view">
+    <h1>Study Triage — AI Transparency</h1>
+    <p>Transparency section placeholder</p>
+    <button onclick="showView('dashboard')">Back to Dashboard</button>
+  </div>
+
+  <script>
+    // ========================
+    // VIEW NAVIGATION
+    // ========================
+    function showView(viewName) {
+      // Hide all views
+      document.querySelectorAll('.view').forEach(v => {
+        v.classList.remove('active');
+      });
+      // Show the requested view
+      document.getElementById('view-' + viewName).classList.add('active');
+    }
+  </script>
+
 </body>
 </html>
