@@ -1104,7 +1104,6 @@ select.form-input {
   </div>
 </div>
 
-
 <!-- ========================
      VIEW 2: DASHBOARD
 ========================= -->
@@ -1120,177 +1119,58 @@ select.form-input {
       <button class="nav-btn" onclick="showView('transparency')">AI Transparency</button>
     </div>
   </nav>
+
   <div class="page-container">
-    <div class="page-header">
-      <h1>Your Semester Dashboard</h1>
-      <p>Subjects ranked by academic risk — highest priority first</p>
+
+    <!-- HEADER -->
+    <div class="flex-between mb-16">
+      <div class="page-header" style="margin-bottom:0;">
+        <h1 id="dashboard-greeting">Your Semester Dashboard</h1>
+        <p id="dashboard-subtitle">Subjects ranked by academic risk — highest priority first</p>
+      </div>
+      <button class="btn btn-secondary btn-sm" onclick="clearStorage()">
+        Reset Data
+      </button>
     </div>
 
-    <!-- Readiness -->
-    <div class="readiness-section">
-      <div class="readiness-score score-medium">67%</div>
-      <div>
-        <div class="readiness-label">Overall Readiness</div>
-        <div class="readiness-message">
-          Some subjects need attention. Check your amber cards.
-        </div>
-        <div class="progress-bar-track">
-          <div class="progress-bar-fill score-medium" style="width: 67%"></div>
-        </div>
-      </div>
+    <!-- READINESS SECTION -->
+    <div class="readiness-section" id="dashboard-readiness">
+      <!-- Populated by renderReadiness() -->
     </div>
 
-    <!-- Recommendation -->
-    <div class="recommendation-box">
-      <div class="recommendation-label">⚡ Focus Right Now</div>
-      <div class="recommendation-main">
-        Mathematics → Topic: Integration
-      </div>
-      <div class="recommendation-why">
-        3 days until test · Confidence 2/5 · 
-        Notes not started · Currently critical risk
-      </div>
+    <!-- RECOMMENDATION BOX -->
+    <div id="dashboard-recommendation">
+      <!-- Populated by renderRecommendation() -->
     </div>
 
-    <!-- Stats -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-value text-red">2</div>
-        <div class="stat-label">Critical Subjects</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value text-amber">1</div>
-        <div class="stat-label">Watch Closely</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value text-green">3</div>
-        <div class="stat-label">On Track</div>
-      </div>
+    <!-- STATS GRID -->
+    <div class="stats-grid" id="dashboard-stats">
+      <!-- Populated by renderStats() -->
     </div>
 
-    <!-- Subject Cards -->
+    <!-- SUBJECT CARDS -->
     <div class="section-header">
       <span class="section-title">Subjects by Risk</span>
-      <button class="btn btn-primary btn-sm">↻ Recalculate</button>
+      <button class="btn btn-primary btn-sm" onclick="handleRecalculate()">
+        ↻ Recalculate
+      </button>
     </div>
 
-    <div class="subject-card risk-red" onclick="showView('deepdive')">
-      <div class="subject-card-header">
-        <span class="subject-card-title">Mathematics</span>
-        <span class="badge badge-red">Critical</span>
-      </div>
-      <div class="subject-card-meta">
-        <div class="meta-item">
-          <span class="meta-label">Urgency Score</span>
-          <span class="meta-value text-red">84</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Days Until Test</span>
-          <span class="meta-value">3 days</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Avg Confidence</span>
-          <span class="meta-value">2.1 / 5</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Credits</span>
-          <span class="meta-value">16</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Grade</span>
-          <span class="meta-value text-red">38%</span>
-        </div>
-      </div>
+    <div id="dashboard-subject-cards">
+      <!-- Populated by renderSubjectCards() -->
     </div>
 
-    <div class="subject-card risk-amber">
-      <div class="subject-card-header">
-        <span class="subject-card-title">Computer Science</span>
-        <span class="badge badge-amber">Watch</span>
-      </div>
-      <div class="subject-card-meta">
-        <div class="meta-item">
-          <span class="meta-label">Urgency Score</span>
-          <span class="meta-value text-amber">61</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Days Until Test</span>
-          <span class="meta-value">12 days</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Avg Confidence</span>
-          <span class="meta-value">3.2 / 5</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Credits</span>
-          <span class="meta-value">16</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Grade</span>
-          <span class="meta-value text-amber">52%</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="subject-card risk-green">
-      <div class="subject-card-header">
-        <span class="subject-card-title">English</span>
-        <span class="badge badge-green">On Track</span>
-      </div>
-      <div class="subject-card-meta">
-        <div class="meta-item">
-          <span class="meta-label">Urgency Score</span>
-          <span class="meta-value text-green">28</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Days Until Test</span>
-          <span class="meta-value">31 days</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Avg Confidence</span>
-          <span class="meta-value">4.1 / 5</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Credits</span>
-          <span class="meta-value">8</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Grade</span>
-          <span class="meta-value text-green">71%</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Timeline -->
+    <!-- TIMELINE -->
     <div class="timeline-section">
-      <div class="timeline-title" style="
-        font-size: 12px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        color: #8B8FA8;
-        margin-bottom: 20px;
-      ">Semester Timeline</div>
-      <div class="timeline-track">
+      <div class="timeline-title">Semester Timeline</div>
+      <div class="timeline-track" id="dashboard-timeline">
         <div class="timeline-line"></div>
-        <div class="timeline-marker" style="left: 10%">
-          <div class="timeline-dot" style="background:#F75C5C"></div>
-          <div class="timeline-marker-label">Mathematics</div>
-        </div>
-        <div class="timeline-marker" style="left: 40%">
-          <div class="timeline-dot" style="background:#F5A623"></div>
-          <div class="timeline-marker-label">Comp Sci</div>
-        </div>
-        <div class="timeline-marker" style="left: 85%">
-          <div class="timeline-dot" style="background:#2DD4A0"></div>
-          <div class="timeline-marker-label">English</div>
-        </div>
+        <!-- Populated by renderTimeline() -->
       </div>
     </div>
 
   </div>
 </div>
-
 
 <!-- ========================
      VIEW 3: DEEP DIVE
@@ -1827,9 +1707,9 @@ function initApp() {
   recalculateAndSort();
   loadProfileInputs();
   renderSetupSubjects();
+  renderDashboard();
 
   if (appData.appState.setupComplete && appData.subjects.length > 0) {
-    if (typeof renderDashboard === 'function') renderDashboard();
     showView('dashboard');
   } else {
     showView('setup');
@@ -2205,6 +2085,386 @@ function loadProfileInputs() {
   if (semEl)   semEl.value         = appData.profile.semester  || '';
   if (hoursEl) hoursEl.value       = appData.profile.studyHoursPerDay || 4;
   if (dispEl)  dispEl.textContent  = appData.profile.studyHoursPerDay || 4;
+}
+
+// ============================================
+// STAGE 5 — DASHBOARD RENDER
+// ============================================
+
+// ========================
+// MASTER DASHBOARD RENDER
+// ========================
+function renderDashboard() {
+  renderGreeting();
+  renderReadiness();
+  renderRecommendation();
+  renderStats();
+  renderSubjectCards();
+  renderTimeline();
+}
+
+// ========================
+// GREETING
+// ========================
+function renderGreeting() {
+  const greetingEl  = document.getElementById('dashboard-greeting');
+  const subtitleEl  = document.getElementById('dashboard-subtitle');
+  if (!greetingEl) return;
+
+  const name = appData.profile.name
+    ? appData.profile.name + "'s Dashboard"
+    : 'Your Semester Dashboard';
+
+  const semester = appData.profile.semester || '';
+
+  greetingEl.textContent  = name;
+  subtitleEl.textContent  = semester
+    ? semester + ' — Subjects ranked by academic risk'
+    : 'Subjects ranked by academic risk — highest priority first';
+}
+
+// ========================
+// READINESS SCORE
+// ========================
+function renderReadiness() {
+  const el = document.getElementById('dashboard-readiness');
+  if (!el) return;
+
+  if (appData.subjects.length === 0) {
+    el.innerHTML = `
+      <div class="readiness-score score-medium">—</div>
+      <div>
+        <div class="readiness-label">Overall Readiness</div>
+        <div class="readiness-message">Add subjects to see your readiness score.</div>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill score-medium" style="width:0%"></div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  const score = calculateReadiness();
+
+  let scoreClass, message;
+  if (score >= 80) {
+    scoreClass = 'score-high';
+    message    = "You're in good shape. Stay consistent.";
+  } else if (score >= 60) {
+    scoreClass = 'score-medium';
+    message    = 'Some subjects need attention. Check your amber cards.';
+  } else if (score >= 40) {
+    scoreClass = 'score-medium';
+    message    = 'Risk building up. Focus on your red subjects today.';
+  } else {
+    scoreClass = 'score-low';
+    message    = 'Critical. Your red subjects need immediate attention.';
+  }
+
+  el.innerHTML = `
+    <div class="readiness-score ${scoreClass}">${score}%</div>
+    <div>
+      <div class="readiness-label">Overall Readiness</div>
+      <div class="readiness-message">${message}</div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill ${scoreClass}" 
+             style="width:${score}%"></div>
+      </div>
+    </div>
+  `;
+}
+
+// ========================
+// TOP RECOMMENDATION
+// ========================
+function renderRecommendation() {
+  const el = document.getElementById('dashboard-recommendation');
+  if (!el) return;
+
+  if (appData.subjects.length === 0) {
+    el.innerHTML = `
+      <div class="recommendation-box">
+        <div class="recommendation-label">⚡ Focus Right Now</div>
+        <div class="recommendation-main">No subjects added yet</div>
+        <div class="recommendation-why">
+          Go to Setup and add your subjects to get a personalised recommendation.
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  const rec = getTopRecommendation();
+  if (!rec) return;
+
+  const topicLine = rec.topic
+    ? ` → Topic: ${rec.topic.name}`
+    : ' → Add topics for a specific recommendation';
+
+  const whyParts = [
+    rec.daysText,
+    rec.topic
+      ? `Confidence ${rec.topic.confidence}/5`
+      : `Avg confidence ${rec.subject.averageConfidence}/5`,
+    rec.topic
+      ? `Notes: ${notesStatusLabel(rec.topic.notesStatus)}`
+      : '',
+    `Urgency score: ${rec.subject.urgencyScore}`
+  ].filter(Boolean).join(' · ');
+
+  const riskColour = {
+    red: '#F75C5C', amber: '#F5A623', green: '#2DD4A0'
+  }[rec.riskLevel] || '#4F8EF7';
+
+  el.innerHTML = `
+    <div class="recommendation-box">
+      <div class="recommendation-label">⚡ Focus Right Now</div>
+      <div class="recommendation-main">
+        <span style="color:${riskColour};">${rec.subject.name}</span>
+        ${topicLine}
+      </div>
+      <div class="recommendation-why">${whyParts}</div>
+    </div>
+  `;
+}
+
+// ========================
+// STATS GRID
+// ========================
+function renderStats() {
+  const el = document.getElementById('dashboard-stats');
+  if (!el) return;
+
+  const red   = appData.subjects.filter(s => s.riskLevel === 'red').length;
+  const amber = appData.subjects.filter(s => s.riskLevel === 'amber').length;
+  const green = appData.subjects.filter(s => s.riskLevel === 'green').length;
+
+  el.innerHTML = `
+    <div class="stat-card">
+      <div class="stat-value text-red">${red}</div>
+      <div class="stat-label">Critical Subjects</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value text-amber">${amber}</div>
+      <div class="stat-label">Watch Closely</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value text-green">${green}</div>
+      <div class="stat-label">On Track</div>
+    </div>
+  `;
+}
+
+// ========================
+// SUBJECT CARDS
+// ========================
+function renderSubjectCards() {
+  const el = document.getElementById('dashboard-subject-cards');
+  if (!el) return;
+
+  if (appData.subjects.length === 0) {
+    el.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">📋</div>
+        <h3>No subjects yet</h3>
+        <p>Go to Setup and add your subjects to see them ranked here.</p>
+        <br>
+        <button class="btn btn-primary" onclick="showView('setup')">
+          Go to Setup
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  el.innerHTML = appData.subjects.map((subject, index) => {
+    const daysText  = formatDaysText(subject.testDate);
+    const days      = getDaysUntilTest(subject.testDate);
+
+    const badgeClass = {
+      red: 'badge-red', amber: 'badge-amber', green: 'badge-green'
+    }[subject.riskLevel];
+
+    const badgeLabel = {
+      red: 'Critical', amber: 'Watch', green: 'On Track'
+    }[subject.riskLevel];
+
+    const scoreColour = {
+      red: 'text-red', amber: 'text-amber', green: 'text-green'
+    }[subject.riskLevel];
+
+    const gradeDisplay = subject.currentGrade !== null
+      ? subject.currentGrade + '%'
+      : 'Not set';
+
+    const gradeColour = subject.currentGrade !== null
+      ? (subject.currentGrade < subject.passMark ? 'text-red'
+        : subject.currentGrade < subject.passMark + 20 ? 'text-amber'
+        : 'text-green')
+      : 'text-muted';
+
+    const daysColour = days !== null
+      ? (days <= 7 ? 'text-red' : days <= 14 ? 'text-amber' : 'text-green')
+      : 'text-muted';
+
+    const rankLabel = index === 0
+      ? '<span class="badge badge-red" style="margin-left:8px;">Top Priority</span>'
+      : '';
+
+    return `
+      <div 
+        class="subject-card risk-${subject.riskLevel}" 
+        onclick="openDeepDive('${subject.id}')"
+        title="Click to view topic breakdown"
+      >
+        <div class="subject-card-header">
+          <div class="flex gap-8" style="align-items:center;">
+            <span class="subject-card-title">${subject.name}</span>
+            ${rankLabel}
+          </div>
+          <span class="badge ${badgeClass}">${badgeLabel}</span>
+        </div>
+
+        <div class="subject-card-meta">
+          <div class="meta-item">
+            <span class="meta-label">Urgency Score</span>
+            <span class="meta-value ${scoreColour}">
+              ${subject.urgencyScore}
+            </span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Days Until Test</span>
+            <span class="meta-value ${daysColour}">${daysText}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Avg Confidence</span>
+            <span class="meta-value">
+              ${subject.topics.length > 0
+                ? subject.averageConfidence + ' / 5'
+                : 'No topics'}
+            </span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Credits</span>
+            <span class="meta-value">${subject.credits}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Grade</span>
+            <span class="meta-value ${gradeColour}">${gradeDisplay}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Topics</span>
+            <span class="meta-value">${subject.topics.length}</span>
+          </div>
+        </div>
+
+        <div style="margin-top:10px;">
+          <span class="text-muted text-small">
+            Click to view topic breakdown →
+          </span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ========================
+// TIMELINE
+// ========================
+function renderTimeline() {
+  const el = document.getElementById('dashboard-timeline');
+  if (!el) return;
+
+  // Clear existing markers (keep the line)
+  const existingMarkers = el.querySelectorAll('.timeline-marker');
+  existingMarkers.forEach(m => m.remove());
+
+  const subjectsWithDates = appData.subjects.filter(s => s.testDate);
+
+  if (subjectsWithDates.length === 0) {
+    el.innerHTML = `
+      <div class="timeline-line"></div>
+      <p class="text-muted text-small" style="padding-top:30px; text-align:center;">
+        Add test dates to see your semester timeline
+      </p>
+    `;
+    return;
+  }
+
+  // Find date range for positioning
+  const dates = subjectsWithDates.map(s => new Date(s.testDate).getTime());
+  const minDate = Math.min(...dates);
+  const maxDate = Math.max(...dates);
+  const range   = maxDate - minDate || 1;
+
+  const colourMap = {
+    red: '#F75C5C', amber: '#F5A623', green: '#2DD4A0'
+  };
+
+  subjectsWithDates.forEach(subject => {
+    const date     = new Date(subject.testDate).getTime();
+    // Position between 5% and 95% of the track
+    const position = range === 0
+      ? 50
+      : 5 + ((date - minDate) / range) * 90;
+
+    const colour   = colourMap[subject.riskLevel] || '#4F8EF7';
+    const days     = getDaysUntilTest(subject.testDate);
+    const daysText = days !== null
+      ? (days <= 0 ? 'Today' : days + 'd')
+      : '';
+
+    const marker = document.createElement('div');
+    marker.className = 'timeline-marker';
+    marker.style.left = position + '%';
+    marker.innerHTML = `
+      <div class="timeline-dot" 
+           style="background:${colour}; border-color:#0F1117;"></div>
+      <div class="timeline-marker-label" style="color:${colour};">
+        ${subject.name}
+      </div>
+      <div class="timeline-marker-label text-muted" 
+           style="font-size:9px; margin-top:2px;">
+        ${daysText}
+      </div>
+    `;
+
+    el.appendChild(marker);
+  });
+}
+
+// ========================
+// RECALCULATE HANDLER
+// ========================
+function handleRecalculate() {
+  const btn = document.querySelector('[onclick="handleRecalculate()"]');
+  if (btn) {
+    btn.textContent = '↻ Sorting...';
+    btn.disabled    = true;
+  }
+
+  // Small delay so user sees the button state change
+  setTimeout(() => {
+    recalculateAndSort();
+    renderDashboard();
+
+    if (btn) {
+      btn.textContent = '↻ Recalculate';
+      btn.disabled    = false;
+    }
+
+    console.log('✅ Dashboard recalculated');
+  }, 400);
+}
+
+// ========================
+// OPEN DEEP DIVE
+// ========================
+function openDeepDive(subjectId) {
+  appData.appState.selectedSubjectId = subjectId;
+  saveToStorage();
+  renderDeepDive(subjectId);
+  showView('deepdive');
 }
 </script>
 
