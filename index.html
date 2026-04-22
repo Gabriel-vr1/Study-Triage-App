@@ -1182,79 +1182,52 @@ select.form-input {
       <span class="navbar-title">Study <span>Triage</span></span>
     </div>
     <div class="navbar-nav">
-      <button class="nav-btn" onclick="showView('dashboard')">← Dashboard</button>
+      <button class="nav-btn" onclick="showView('dashboard')">
+        ← Dashboard
+      </button>
+      <button class="nav-btn" onclick="showView('transparency')">
+        AI Transparency
+      </button>
     </div>
   </nav>
+
   <div class="page-container">
-    <div class="flex-between mb-16">
-      <div class="page-header" style="margin-bottom:0">
-        <h1>Mathematics</h1>
-        <p>16 credits · 3 days until test</p>
-      </div>
-      <span class="badge badge-red">Critical Risk · Score 84</span>
+
+    <!-- SUBJECT HEADER -->
+    <div id="deepdive-header">
+      <!-- Populated by renderDeepDive() -->
     </div>
 
     <div class="divider"></div>
 
+    <!-- SCORE BREAKDOWN -->
+    <div id="deepdive-score-breakdown" class="card" 
+         style="margin-bottom:24px;">
+      <!-- Populated by renderDeepDive() -->
+    </div>
+
+    <!-- TOPICS SECTION -->
     <div class="section-header">
       <span class="section-title">Topics — Weakest First</span>
+      <button 
+        class="btn btn-secondary btn-sm"
+        id="deepdive-add-topic-btn"
+      >
+        + Add Topic
+      </button>
     </div>
 
-    <div class="topic-row">
-      <div class="topic-name">Integration</div>
-      <div class="topic-controls">
-        <div class="confidence-dots">
-          <div class="confidence-dot filled-1"></div>
-          <div class="confidence-dot"></div>
-          <div class="confidence-dot"></div>
-          <div class="confidence-dot"></div>
-          <div class="confidence-dot"></div>
-        </div>
-        <span class="badge badge-gray">Notes: Not Started</span>
-        <button class="btn btn-success btn-sm">Mark Revised</button>
-      </div>
+    <div id="deepdive-topics-list">
+      <!-- Populated by renderDeepDive() -->
     </div>
 
-    <div class="topic-row">
-      <div class="topic-name">Differentiation</div>
-      <div class="topic-controls">
-        <div class="confidence-dots">
-          <div class="confidence-dot filled-2"></div>
-          <div class="confidence-dot filled-2"></div>
-          <div class="confidence-dot"></div>
-          <div class="confidence-dot"></div>
-          <div class="confidence-dot"></div>
-        </div>
-        <span class="badge badge-blue">Notes: In Progress</span>
-        <button class="btn btn-success btn-sm">Mark Revised</button>
-      </div>
-    </div>
-
-    <div class="topic-row">
-      <div class="topic-name">Algebra</div>
-      <div class="topic-controls">
-        <div class="confidence-dots">
-          <div class="confidence-dot filled-4"></div>
-          <div class="confidence-dot filled-4"></div>
-          <div class="confidence-dot filled-4"></div>
-          <div class="confidence-dot filled-4"></div>
-          <div class="confidence-dot"></div>
-        </div>
-        <span class="badge badge-green">Notes: Done</span>
-        <button class="btn btn-success btn-sm">Mark Revised</button>
-      </div>
-    </div>
-
-    <div class="card mt-24">
-      <div class="section-title mb-8">💡 Study Session Suggestion</div>
-      <p class="text-muted mt-8">Based on your available hours and 
-      weakness score, dedicate <strong style="color:white">3 sessions</strong> 
-      to Mathematics this week. Start with Integration.</p>
+    <!-- STUDY SUGGESTION -->
+    <div id="deepdive-suggestion" class="card mt-24">
+      <!-- Populated by renderDeepDive() -->
     </div>
 
   </div>
 </div>
-
 
 <!-- ========================
      VIEW 4: TRANSPARENCY
@@ -2038,6 +2011,12 @@ function saveTopicFromModal() {
 
   closeModal('modal-add-topic');
   renderSetupSubjects();
+
+  // If deep dive is open for this subject, refresh it too
+  if (appData.appState.selectedSubjectId === addTopicTargetSubjectId) {
+    const subject = getSubjectById(addTopicTargetSubjectId);
+    if (subject) renderDeepDive(subject.id);
+  }
 }
 
 // ========================
@@ -2465,6 +2444,442 @@ function openDeepDive(subjectId) {
   saveToStorage();
   renderDeepDive(subjectId);
   showView('deepdive');
+}
+
+// ============================================
+// STAGE 6 — DEEP DIVE VIEW
+// ============================================
+
+// ========================
+// MASTER DEEP DIVE RENDER
+// ========================
+function renderDeepDive(subjectId) {
+  const subject = getSubjectById(subjectId);
+  if (!subject) {
+    showView('dashboard');
+    return;
+  }
+
+  renderDeepDiveHeader(subject);
+  renderDeepDiveScoreBreakdown(subject);
+  renderDeepDiveTopics(subject);
+  renderDeepDiveSuggestion(subject);
+  wireDeepDiveAddTopicBtn(subject.id);
+}
+
+// ========================
+// DEEP DIVE HEADER
+// ========================
+function renderDeepDiveHeader(subject) {
+  const el = document.getElementById('deepdive-header');
+  if (!el) return;
+
+  const days      = getDaysUntilTest(subject.testDate);
+  const daysText  = formatDaysText(subject.testDate);
+
+  const badgeClass = {
+    red: 'badge-red', amber: 'badge-amber', green: 'badge-green'
+  }[subject.riskLevel];
+
+  const badgeLabel = {
+    red: 'Critical Risk', amber: 'Watch Closely', green: 'On Track'
+  }[subject.riskLevel];
+
+  const gradeDisplay = subject.currentGrade !== null
+    ? subject.currentGrade + '%'
+    : 'No grade entered';
+
+  const gradeColour = subject.currentGrade !== null
+    ? (subject.currentGrade < subject.passMark
+        ? 'text-red'
+        : subject.currentGrade < subject.passMark + 20
+          ? 'text-amber'
+          : 'text-green')
+    : 'text-muted';
+
+  el.innerHTML = `
+    <div class="flex-between mb-16">
+      <div>
+        <h1 style="font-size:28px; font-weight:700; 
+                   letter-spacing:-0.5px; margin-bottom:6px;">
+          ${subject.name}
+        </h1>
+        <p class="text-muted">
+          ${subject.credits} credits · Test in ${daysText}
+          · Pass mark ${subject.passMark}%
+        </p>
+      </div>
+      <div style="text-align:right;">
+        <span class="badge ${badgeClass}" 
+              style="font-size:13px; padding:8px 16px; margin-bottom:8px; 
+                     display:inline-block;">
+          ${badgeLabel}
+        </span>
+        <br>
+        <span style="font-size:24px; font-weight:800; 
+                     letter-spacing:-1px;" 
+              class="${{red:'text-red',amber:'text-amber',
+                        green:'text-green'}[subject.riskLevel]}">
+          ${subject.urgencyScore}
+        </span>
+        <span class="text-muted text-small"> urgency score</span>
+      </div>
+    </div>
+
+    <div class="stats-grid" style="margin-bottom:0;">
+      <div class="stat-card">
+        <div class="stat-value ${gradeColour}" style="font-size:24px;">
+          ${gradeDisplay}
+        </div>
+        <div class="stat-label">Current Grade</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="font-size:24px;">
+          ${subject.topics.length > 0
+            ? subject.averageConfidence + '/5'
+            : '—'}
+        </div>
+        <div class="stat-label">Avg Confidence</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="font-size:24px;">
+          ${subject.topics.length}
+        </div>
+        <div class="stat-label">Topics Added</div>
+      </div>
+    </div>
+  `;
+}
+
+// ========================
+// SCORE BREAKDOWN
+// ========================
+function renderDeepDiveScoreBreakdown(subject) {
+  const el = document.getElementById('deepdive-score-breakdown');
+  if (!el) return;
+
+  const daysScore   = calculateDaysScore(subject.testDate);
+  const creditScore = calculateCreditScore(subject.credits);
+  const confidScore = Math.round(calculateConfidenceScore(subject.topics));
+  const gradeScore  = calculateGradeRiskScore(
+                        subject.currentGrade, subject.passMark);
+
+  const weighted = {
+    days:   Math.round(daysScore   * 0.40),
+    credit: Math.round(creditScore * 0.20),
+    confid: Math.round(confidScore * 0.25),
+    grade:  Math.round(gradeScore  * 0.15)
+  };
+
+  function scoreBar(value, colour) {
+    return `
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div style="flex:1; background:#2A2D3A; border-radius:4px; 
+                    height:6px; overflow:hidden;">
+          <div style="width:${value}%; height:100%; 
+                      background:${colour}; border-radius:4px;
+                      transition: width 0.6s ease;">
+          </div>
+        </div>
+        <span style="min-width:32px; font-size:13px; 
+                     font-weight:700; color:${colour};">
+          ${value}
+        </span>
+      </div>
+    `;
+  }
+
+  el.innerHTML = `
+    <div class="section-title" style="margin-bottom:16px;">
+      Urgency Score Breakdown
+    </div>
+    <div style="display:grid; gap:14px;">
+
+      <div>
+        <div class="flex-between mb-8">
+          <span class="text-small text-muted">
+            Days Until Test 
+            <span style="color:#8B8FA8;">(40% weight)</span>
+          </span>
+          <span class="text-small text-muted">
+            Contributes ${weighted.days} pts
+          </span>
+        </div>
+        ${scoreBar(daysScore, '#4F8EF7')}
+      </div>
+
+      <div>
+        <div class="flex-between mb-8">
+          <span class="text-small text-muted">
+            Credit Value 
+            <span style="color:#8B8FA8;">(20% weight)</span>
+          </span>
+          <span class="text-small text-muted">
+            Contributes ${weighted.credit} pts
+          </span>
+        </div>
+        ${scoreBar(creditScore, '#9B8EF7')}
+      </div>
+
+      <div>
+        <div class="flex-between mb-8">
+          <span class="text-small text-muted">
+            Topic Confidence 
+            <span style="color:#8B8FA8;">(25% weight)</span>
+          </span>
+          <span class="text-small text-muted">
+            Contributes ${weighted.confid} pts
+          </span>
+        </div>
+        ${scoreBar(confidScore, '#F5A623')}
+      </div>
+
+      <div>
+        <div class="flex-between mb-8">
+          <span class="text-small text-muted">
+            Grade Risk 
+            <span style="color:#8B8FA8;">(15% weight)</span>
+          </span>
+          <span class="text-small text-muted">
+            Contributes ${weighted.grade} pts
+          </span>
+        </div>
+        ${scoreBar(gradeScore, '#F75C5C')}
+      </div>
+
+      <div style="border-top:1px solid #2A2D3A; padding-top:14px;">
+        <div class="flex-between">
+          <span class="text-small text-muted">Final Urgency Score</span>
+          <span style="font-size:20px; font-weight:800; 
+                       letter-spacing:-0.5px;"
+                class="${{red:'text-red', amber:'text-amber',
+                          green:'text-green'}[subject.riskLevel]}">
+            ${subject.urgencyScore} / 100
+          </span>
+        </div>
+      </div>
+
+    </div>
+  `;
+}
+
+// ========================
+// DEEP DIVE TOPICS
+// ========================
+function renderDeepDiveTopics(subject) {
+  const el = document.getElementById('deepdive-topics-list');
+  if (!el) return;
+
+  if (!subject.topics || subject.topics.length === 0) {
+    el.innerHTML = `
+      <div class="empty-state" style="padding:40px 20px;">
+        <div class="empty-state-icon">📝</div>
+        <h3>No topics yet</h3>
+        <p>Click "+ Add Topic" to break this subject into topics<br>
+        and get a more accurate urgency score.</p>
+      </div>
+    `;
+    return;
+  }
+
+  // Sort topics weakest confidence first
+  const sorted = [...subject.topics].sort((a, b) => {
+    if (a.confidence !== b.confidence) return a.confidence - b.confidence;
+    const np = { not_started: 0, in_progress: 1, done: 2 };
+    return np[a.notesStatus] - np[b.notesStatus];
+  });
+
+  el.innerHTML = sorted.map((topic, index) => {
+    const isWeakest = index === 0;
+
+    const confColour = topic.confidence <= 2
+      ? '#F75C5C'
+      : topic.confidence <= 3
+        ? '#F5A623'
+        : '#2DD4A0';
+
+    const dots = [1,2,3,4,5].map(i => `
+      <div 
+        class="confidence-dot ${i <= topic.confidence
+          ? 'filled-' + topic.confidence : ''}"
+        onclick="handleTopicConfidenceClick(
+          '${subject.id}','${topic.id}',${i})"
+        title="Set confidence to ${i}"
+        style="cursor:pointer; width:12px; height:12px;"
+      ></div>
+    `).join('');
+
+    return `
+      <div class="topic-row ${isWeakest
+        ? 'style="border-color:rgba(247,92,92,0.3);"' : ''}"
+        id="topic-row-${topic.id}"
+      >
+        <div style="flex:1; display:flex; 
+                    align-items:center; gap:10px;">
+          ${isWeakest
+            ? '<span class="badge badge-red" style="font-size:9px;">Weakest</span>'
+            : ''}
+          <div class="topic-name">${topic.name}</div>
+        </div>
+
+        <div class="topic-controls">
+
+          <!-- Confidence dots (clickable) -->
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <span class="text-small text-muted" 
+                  style="font-size:9px; text-align:center;">
+              CONFIDENCE
+            </span>
+            <div class="confidence-dots">${dots}</div>
+          </div>
+
+          <!-- Confidence number -->
+          <span style="font-size:16px; font-weight:700; 
+                       color:${confColour}; min-width:28px; 
+                       text-align:center;"
+                id="conf-val-${topic.id}">
+            ${topic.confidence}/5
+          </span>
+
+          <!-- Notes status toggle -->
+          <button 
+            class="badge ${notesStatusBadgeClass(topic.notesStatus)}"
+            style="cursor:pointer; border:none;"
+            onclick="handleNotesToggle('${subject.id}','${topic.id}')"
+            title="Click to cycle notes status"
+          >
+            ${notesStatusLabel(topic.notesStatus)}
+          </button>
+
+          <!-- Mark Revised -->
+          <button 
+            class="btn btn-success btn-sm"
+            onclick="handleMarkRevised('${subject.id}','${topic.id}')"
+            ${topic.confidence >= 5 ? 'disabled style="opacity:0.4;"' : ''}
+          >
+            ${topic.confidence >= 5 ? '✓ Mastered' : '↑ Mark Revised'}
+          </button>
+
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ========================
+// STUDY SUGGESTION
+// ========================
+function renderDeepDiveSuggestion(subject) {
+  const el = document.getElementById('deepdive-suggestion');
+  if (!el) return;
+
+  const hours    = appData.profile.studyHoursPerDay || 4;
+  const topics   = subject.topics.length || 1;
+  const urgency  = subject.urgencyScore;
+
+  // Sessions = urgency-weighted recommendation
+  const sessions = urgency >= 75
+    ? Math.ceil(hours * 0.6)
+    : urgency >= 45
+      ? Math.ceil(hours * 0.35)
+      : Math.ceil(hours * 0.15);
+
+  const weakest  = subject.topics.length > 0
+    ? [...subject.topics].sort((a,b) =>
+        a.confidence - b.confidence)[0]
+    : null;
+
+  const notDone  = subject.topics.filter(
+    t => t.notesStatus !== 'done').length;
+
+  el.innerHTML = `
+    <div class="section-title mb-16">💡 Study Session Suggestion</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+      <div>
+        <div class="readiness-label">Recommended Sessions This Week</div>
+        <div style="font-size:32px; font-weight:800; 
+                    letter-spacing:-1px; color:#4F8EF7;">
+          ${sessions}
+        </div>
+        <div class="text-muted text-small">
+          Based on ${hours}h available/day 
+          and urgency score of ${urgency}
+        </div>
+      </div>
+      <div>
+        <div class="readiness-label">Start With</div>
+        <div style="font-size:16px; font-weight:600; 
+                    color:#FFFFFF; margin-bottom:4px;">
+          ${weakest ? weakest.name : 'Add topics first'}
+        </div>
+        <div class="text-muted text-small">
+          ${notDone} topic${notDone !== 1 ? 's' : ''} 
+          still need notes · 
+          ${subject.topics.filter(t => t.confidence <= 2).length} 
+          low confidence
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ========================
+// WIRE ADD TOPIC BUTTON
+// ========================
+function wireDeepDiveAddTopicBtn(subjectId) {
+  const btn = document.getElementById('deepdive-add-topic-btn');
+  if (btn) {
+    btn.onclick = () => openAddTopicModal(subjectId);
+  }
+}
+
+// ========================
+// TOPIC INTERACTION HANDLERS
+// ========================
+function handleTopicConfidenceClick(subjectId, topicId, newConfidence) {
+  updateTopicConfidence(subjectId, topicId, newConfidence);
+  recalculateAndSort();
+  const subject = getSubjectById(subjectId);
+  renderDeepDiveTopics(subject);
+  renderDeepDiveHeader(subject);
+  renderDeepDiveScoreBreakdown(subject);
+  renderDeepDiveSuggestion(subject);
+  renderDashboard();
+}
+
+function handleNotesToggle(subjectId, topicId) {
+  const subject = getSubjectById(subjectId);
+  if (!subject) return;
+  const topic = subject.topics.find(t => t.id === topicId);
+  if (!topic) return;
+
+  // Cycle: not_started → in_progress → done → not_started
+  const cycle = {
+    not_started: 'in_progress',
+    in_progress: 'done',
+    done: 'not_started'
+  };
+
+  updateTopicNotes(subjectId, topicId, cycle[topic.notesStatus]);
+  recalculateAndSort();
+  const updated = getSubjectById(subjectId);
+  renderDeepDiveTopics(updated);
+  renderDeepDiveScoreBreakdown(updated);
+  renderDashboard();
+}
+
+function handleMarkRevised(subjectId, topicId) {
+  const changed = markTopicRevised(subjectId, topicId);
+  if (changed) {
+    recalculateAndSort();
+    const subject = getSubjectById(subjectId);
+    renderDeepDiveTopics(subject);
+    renderDeepDiveHeader(subject);
+    renderDeepDiveScoreBreakdown(subject);
+    renderDeepDiveSuggestion(subject);
+    renderDashboard();
+    console.log('✅ Topic marked revised — scores updated');
+  }
 }
 </script>
 
