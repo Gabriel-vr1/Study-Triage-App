@@ -120,6 +120,10 @@ body {
   color: #FFFFFF;
 }
 
+.topic-row:first-child {
+  border-color: rgba(247, 92, 92, 0.25);
+}
+
 /* ========================
    PAGE CONTAINER
 ======================== */
@@ -520,7 +524,7 @@ select.form-input {
 
 .timeline-track {
   position: relative;
-  height: 60px;
+  height: 80px;
   min-width: 600px;
 }
 
@@ -1239,23 +1243,203 @@ select.form-input {
       <span class="navbar-title">Study <span>Triage</span></span>
     </div>
     <div class="navbar-nav">
-      <button class="nav-btn" onclick="showView('dashboard')">← Dashboard</button>
+      <button class="nav-btn" onclick="showView('dashboard')">
+        ← Dashboard
+      </button>
     </div>
   </nav>
+
   <div class="page-container">
     <div class="page-header">
-      <h1>AI Transparency</h1>
-      <p>How AI was used and what decisions were made by the student</p>
+      <h1>AI Transparency Report</h1>
+      <p>How AI was used, what it suggested, and what decisions 
+         were made independently by the student.</p>
     </div>
+
+    <!-- OVERVIEW -->
     <div class="transparency-block">
-      <h3>Content coming in Stage 11</h3>
-      <p>This section will document every AI interaction, 
-      every decision made independently, and every refinement 
-      applied to the AI suggestions.</p>
+      <h3>📋 Overview</h3>
+      <p>
+        Study Triage was built as part of the BET Software Classroom 
+        CRASH 2026 competition. The challenge required using an AI tool 
+        as an assistant to design and build a simple application that 
+        helps a first-year student manage their studies more effectively.
+        AI was used throughout the planning and design process as a 
+        thinking partner — not as a code generator. Every formula, 
+        every weighting decision, and every feature included in this 
+        application was interrogated, modified, and owned by the student 
+        before implementation.
+      </p>
     </div>
+
+    <!-- PROBLEM IDENTIFICATION -->
+    <div class="transparency-block">
+      <h3>🔍 Step 1 — Problem Identification</h3>
+      <p>
+        The student began by identifying real problems first-year 
+        university students face rather than jumping directly to a 
+        solution. AI was used to brainstorm a broad list of pain points 
+        across time management, academic performance, mental load, and 
+        study habits. The student then selected the problems that felt 
+        most genuine and impactful: not knowing what to study next, 
+        studying easy content instead of weak areas, having no big 
+        picture view of the semester, and not knowing whether they are 
+        actually ready for a test. The AI suggested social and 
+        environmental problems such as group project coordination, but 
+        the student independently rejected these because the single HTML 
+        file format with no network access made them impossible to 
+        implement meaningfully.
+      </p>
+    </div>
+
+    <!-- CONCEPT DEVELOPMENT -->
+    <div class="transparency-block">
+      <h3>💡 Step 2 — Concept Development</h3>
+      <p>
+        AI proposed four application categories: a smart priority engine, 
+        an exam week scheduler, a sorting algorithm visualiser, and a 
+        subject health dashboard. The student chose to combine the 
+        priority engine logic with the dashboard format — using the 
+        dashboard as the visual shell and the urgency score engine as the 
+        brain. The AI also suggested a simpler "ranked list" approach 
+        focused only on outputting a sorted task list. The student 
+        rejected this because it would not score well on GUI look and feel 
+        and would not be visually distinctive from other submissions. The 
+        student independently decided that the application needed three 
+        connected views — setup, dashboard, and deep dive — so that the 
+        sorting algorithm would be meaningful at multiple levels of detail.
+      </p>
+    </div>
+
+    <!-- URGENCY FORMULA -->
+    <div class="transparency-block">
+      <h3>⚙️ Step 3 — The Urgency Score Formula</h3>
+      <p>
+        The urgency score formula is the core intellectual contribution 
+        of this application. AI was used to identify relevant factors 
+        that should influence academic risk: time until test, subject 
+        importance, student confidence, and current grade. The student 
+        made all weighting decisions independently. Days until test was 
+        assigned 40% weight because proximity to a test is the most 
+        time-sensitive factor and has an exponential real-world impact. 
+        Topic confidence was assigned 25% because it most directly 
+        reflects whether a student is prepared for the content. Credit 
+        value was assigned 20% because higher credit subjects carry more 
+        academic consequence. Grade risk was assigned 15% as a supporting 
+        signal rather than a dominant one, since current grade is not 
+        always available and can reflect past performance rather than 
+        future readiness. The AI initially described the time component 
+        as "exponential decay." The student identified this as inaccurate 
+        and corrected it to urgency bands with sharply increasing risk 
+        near the test date, which is both more honest and easier to 
+        defend.
+      </p>
+    </div>
+
+    <!-- SORTING ALGORITHM -->
+    <div class="transparency-block">
+      <h3>🔢 Step 4 — Sorting Algorithm Choice</h3>
+      <p>
+        The student selected insertion sort after evaluating it against 
+        alternatives. AI confirmed that insertion sort is appropriate for 
+        small datasets, is stable, and produces a readable comparator 
+        function that judges can follow. The student independently decided 
+        that the sort should run visibly on a recalculate action rather 
+        than silently in the background, because the rubric specifically 
+        scores sorting algorithm implementation and the sort needed to be 
+        demonstrable. The sort was hand-written without using JavaScript's 
+        built-in array.sort() method, ensuring full transparency of the 
+        algorithm logic. The comparator used is the urgency score, which 
+        means every sort decision is traceable back to the four-component 
+        formula.
+      </p>
+    </div>
+
+    <!-- DESIGN DECISIONS -->
+    <div class="transparency-block">
+      <h3>🎨 Step 5 — Design and UI Decisions</h3>
+      <p>
+        AI suggested keeping the visual design minimal to reduce 
+        complexity. The student disagreed and chose a dark dashboard 
+        aesthetic with colour-coded risk indicators, a score breakdown 
+        view, and a semester timeline. This decision was made because 
+        GUI look and feel accounts for 10 out of 30 available marks, 
+        and a plain ranked list would not score near the maximum. The 
+        colour system — red for critical, amber for watch, green for on 
+        track — was chosen because it mirrors real-world risk dashboards 
+        and is immediately readable without explanation. The student chose 
+        to include a score breakdown panel in the deep dive view so that 
+        the urgency formula is visible and transparent to both the user 
+        and the judges, not hidden inside the code.
+      </p>
+    </div>
+
+    <!-- WHAT AI DID NOT DO -->
+    <div class="transparency-block">
+      <h3>🚫 Step 6 — What AI Did Not Do</h3>
+      <p>
+        AI did not independently choose the application concept. AI did 
+        not determine the formula weights. AI did not decide which 
+        features to include or exclude. AI did not write the final code 
+        without student direction at each stage. Every stage of 
+        development was initiated by the student with a specific goal, 
+        and AI output was reviewed, questioned, and modified before being 
+        accepted. In several cases — the exponential language correction, 
+        the rejection of the minimal ranked list approach, the inclusion 
+        of the timeline despite AI suggesting it was optional — the 
+        student overruled AI suggestions based on independent judgment.
+      </p>
+    </div>
+
+    <!-- FORMULA REFERENCE -->
+    <div class="transparency-block">
+      <h3>📐 Formula Reference</h3>
+      <p style="margin-bottom:16px;">
+        The urgency score formula for reference:
+      </p>
+      <div style="
+        background:#0F1117; border:1px solid #2A2D3A; 
+        border-radius:8px; padding:16px; 
+        font-family:monospace; font-size:13px; 
+        color:#4F8EF7; line-height:2;
+      ">
+        Urgency Score =<br>
+        &nbsp;&nbsp;(Days Until Test Score &nbsp;× 0.40) +<br>
+        &nbsp;&nbsp;(Credit Value Score &nbsp;&nbsp;&nbsp;× 0.20) +<br>
+        &nbsp;&nbsp;(Confidence Score &nbsp;&nbsp;&nbsp;&nbsp;× 0.25) +<br>
+        &nbsp;&nbsp;(Grade Risk Score &nbsp;&nbsp;&nbsp;&nbsp;× 0.15)<br>
+        <br>
+        <span style="color:#2DD4A0;">
+        Result: 0 – 100 &nbsp;|&nbsp; 
+        75–100 = Critical &nbsp;|&nbsp; 
+        45–74 = Watch &nbsp;|&nbsp; 
+        0–44 = On Track
+        </span>
+      </div>
+    </div>
+
+    <!-- STUDENT DECLARATION -->
+    <div class="transparency-block" style="
+      border-color:rgba(79,142,247,0.3); 
+      background:rgba(79,142,247,0.05);
+    ">
+      <h3>✅ Student Declaration</h3>
+      <p>
+        I used AI as a design and thinking partner throughout this 
+        project. I asked questions, challenged its suggestions, 
+        rejected ideas that did not serve the brief, and made all 
+        final decisions independently. The urgency formula weights, 
+        the feature set, the sorting algorithm choice, and the visual 
+        design direction were all my own decisions. The code was written 
+        with AI assistance at each stage, but every line was reviewed 
+        and understood before inclusion. This application represents my 
+        own thinking about a real problem, built with AI as a tool — 
+        not as a replacement for judgment.
+      </p>
+    </div>
+
   </div>
 </div>
-
 
 <script>
 // ============================================
@@ -2354,24 +2538,27 @@ function renderTimeline() {
   const el = document.getElementById('dashboard-timeline');
   if (!el) return;
 
-  // Clear existing markers (keep the line)
-  const existingMarkers = el.querySelectorAll('.timeline-marker');
-  existingMarkers.forEach(m => m.remove());
+  el.innerHTML = '<div class="timeline-line"></div>';
 
   const subjectsWithDates = appData.subjects.filter(s => s.testDate);
 
   if (subjectsWithDates.length === 0) {
     el.innerHTML = `
       <div class="timeline-line"></div>
-      <p class="text-muted text-small" style="padding-top:30px; text-align:center;">
+      <p class="text-muted text-small" 
+         style="padding-top:30px; text-align:center;">
         Add test dates to see your semester timeline
       </p>
     `;
     return;
   }
 
-  // Find date range for positioning
-  const dates = subjectsWithDates.map(s => new Date(s.testDate).getTime());
+  // Sort by date so labels don't randomly overlap
+  const sorted = [...subjectsWithDates].sort((a, b) =>
+    new Date(a.testDate) - new Date(b.testDate)
+  );
+
+  const dates   = sorted.map(s => new Date(s.testDate).getTime());
   const minDate = Math.min(...dates);
   const maxDate = Math.max(...dates);
   const range   = maxDate - minDate || 1;
@@ -2380,32 +2567,52 @@ function renderTimeline() {
     red: '#F75C5C', amber: '#F5A623', green: '#2DD4A0'
   };
 
-  subjectsWithDates.forEach(subject => {
+  // Alternate label position up/down to prevent overlap
+  sorted.forEach((subject, index) => {
     const date     = new Date(subject.testDate).getTime();
-    // Position between 5% and 95% of the track
-    const position = range === 0
+    const position = sorted.length === 1
       ? 50
       : 5 + ((date - minDate) / range) * 90;
 
     const colour   = colourMap[subject.riskLevel] || '#4F8EF7';
     const days     = getDaysUntilTest(subject.testDate);
-    const daysText = days !== null
-      ? (days <= 0 ? 'Today' : days + 'd')
-      : '';
+    const daysText = days === null ? ''
+      : days <= 0 ? 'Today'
+      : days === 1 ? '1d'
+      : days + 'd';
 
-    const marker = document.createElement('div');
+    // Alternate: even index labels go above line, odd go below
+    const isAbove  = index % 2 === 0;
+    const topVal   = isAbove ? '0px' : '32px';
+    const labelTop = isAbove ? '-22px' : '46px';
+
+    const marker   = document.createElement('div');
     marker.className = 'timeline-marker';
-    marker.style.left = position + '%';
+    marker.style.cssText = `
+      left: ${position}%; 
+      top: ${topVal};
+      position: absolute;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    `;
+
     marker.innerHTML = `
-      <div class="timeline-dot" 
-           style="background:${colour}; border-color:#0F1117;"></div>
-      <div class="timeline-marker-label" style="color:${colour};">
-        ${subject.name}
-      </div>
-      <div class="timeline-marker-label text-muted" 
-           style="font-size:9px; margin-top:2px;">
-        ${daysText}
-      </div>
+      <div style="
+        width:12px; height:12px; border-radius:50%;
+        background:${colour}; border:2px solid #0F1117;
+        margin-top:14px; flex-shrink:0;
+      "></div>
+      <div style="
+        font-size:10px; font-weight:600; color:${colour};
+        white-space:nowrap; margin-top:4px; text-align:center;
+        max-width:90px; overflow:hidden; text-overflow:ellipsis;
+      ">${subject.name}</div>
+      <div style="
+        font-size:9px; color:#8B8FA8; 
+        text-align:center; margin-top:1px;
+      ">${daysText}</div>
     `;
 
     el.appendChild(marker);
@@ -2880,6 +3087,93 @@ function handleMarkRevised(subjectId, topicId) {
     renderDashboard();
     console.log('✅ Topic marked revised — scores updated');
   }
+}
+// ============================================
+// STAGE 7 — FINAL POLISH
+// ============================================
+
+// ========================
+// EDGE CASE: NO SUBJECTS ON DASHBOARD
+// ========================
+// Already handled in renderSubjectCards()
+// This adds a dashboard guard for the
+// readiness section when 0 subjects exist
+
+// ========================
+// KEYBOARD SHORTCUT
+// Escape key closes any open modal
+// ========================
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.open').forEach(modal => {
+      modal.classList.remove('open');
+    });
+  }
+});
+
+// ========================
+// CLICK OUTSIDE MODAL TO CLOSE
+// ========================
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) {
+      overlay.classList.remove('open');
+    }
+  });
+});
+
+// ========================
+// NAVBAR ACTIVE STATE
+// Updates nav button active class on view change
+// ========================
+const originalShowView = showView;
+window.showView = function(viewName) {
+  originalShowView(viewName);
+
+  // Update nav active states
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+
+  const activeMap = {
+    setup:        'Setup',
+    dashboard:    'Dashboard',
+    transparency: 'AI Transparency'
+  };
+
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    if (btn.textContent.trim() === activeMap[viewName]) {
+      btn.classList.add('active');
+    }
+  });
+};
+
+// ========================
+// DASHBOARD LIVE SYNC
+// When returning to dashboard from deep dive,
+// always re-render to reflect any changes made
+// ========================
+const originalShowViewInner = window.showView;
+window.showView = function(viewName) {
+  originalShowViewInner(viewName);
+  if (viewName === 'dashboard') {
+    renderDashboard();
+  }
+};
+
+// ========================
+// EMPTY STATE GUARD
+// If somehow dashboard is reached with no subjects,
+// redirect to setup
+// ========================
+function guardDashboard() {
+  if (appData.subjects.length === 0) {
+    appData.appState.setupComplete = false;
+    saveToStorage();
+    showView('setup');
+    return false;
+  }
+  return true;
 }
 </script>
 
