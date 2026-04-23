@@ -843,16 +843,18 @@ select.form-input {
     </div>
 
     <!-- Credits + Pass Mark -->
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Credit Value</label>
-        <select id="modal-subject-credits" class="form-input">
-          <option value="4">4 credits</option>
-          <option value="8">8 credits</option>
-          <option value="16" selected>16 credits</option>
-          <option value="32">32 credits</option>
-        </select>
-      </div>
+  <div class="form-group">
+  <label class="form-label">Credit Value</label>
+  <input
+    type="number"
+    class="form-input"
+    id="modal-subject-credits"
+    placeholder="e.g. 16"
+    min="1"
+    max="128"
+    value="16"
+  >
+</div>
       <div class="form-group">
         <label class="form-label">Pass Mark (%)</label>
         <input
@@ -999,6 +1001,188 @@ select.form-input {
   </div>
 </div>
 
+<!-- ========================
+     MODAL: EDIT SUBJECT
+========================= -->
+<div id="modal-edit-subject" class="modal-overlay">
+  <div class="modal">
+    <h2>Edit Subject</h2>
+
+    <input type="hidden" id="edit-subject-id">
+
+    <div class="form-group">
+      <label class="form-label">Subject Name</label>
+      <input
+        type="text"
+        class="form-input"
+        id="edit-subject-name"
+        placeholder="e.g. Mathematics"
+      >
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Credit Value</label>
+        <input
+          type="number"
+          class="form-input"
+          id="edit-subject-credits"
+          min="1" max="128"
+          placeholder="e.g. 16"
+        >
+      </div>
+      <div class="form-group">
+        <label class="form-label">Test / Exam Date</label>
+        <input
+          type="date"
+          class="form-input"
+          id="edit-subject-testdate"
+        >
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Current Grade %</label>
+        <input
+          type="number"
+          class="form-input"
+          id="edit-subject-grade"
+          placeholder="e.g. 54"
+          min="0" max="100"
+        >
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pass Mark %</label>
+        <input
+          type="number"
+          class="form-input"
+          id="edit-subject-passmark"
+          placeholder="50"
+          min="0" max="100"
+        >
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ASSIGNMENT DATES -->
+    <div class="section-header">
+      <span class="section-title">Assignment Dates</span>
+      <button class="btn btn-secondary btn-sm"
+        onclick="addAssignmentRow()">
+        + Add Assignment
+      </button>
+    </div>
+
+    <div id="edit-assignments-list"></div>
+
+    <div id="edit-assignments-empty"
+         class="text-muted text-small mt-8 mb-16">
+      No assignments added yet.
+    </div>
+
+    <div id="edit-subject-error" style="
+      display:none;
+      color:#F75C5C;
+      font-size:13px;
+      margin-bottom:12px;
+    "></div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary"
+        onclick="closeModal('modal-edit-subject')">
+        Cancel
+      </button>
+      <button class="btn btn-primary"
+        onclick="saveEditedSubject()">
+        Save Changes
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ========================
+     MODAL: EDIT TOPIC
+========================= -->
+<div id="modal-edit-topic" class="modal-overlay">
+  <div class="modal">
+    <h2>Edit Topic</h2>
+
+    <input type="hidden" id="edit-topic-subject-id">
+    <input type="hidden" id="edit-topic-id">
+
+    <div class="form-group">
+      <label class="form-label">Topic Name</label>
+      <input
+        type="text"
+        class="form-input"
+        id="edit-topic-name"
+        placeholder="e.g. Integration"
+      >
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">
+        Confidence Level:
+        <span id="edit-topic-conf-display" class="text-blue">3</span>/5
+      </label>
+      <div class="slider-container">
+        <span class="text-muted text-small">1</span>
+        <input
+          type="range"
+          class="slider"
+          id="edit-topic-confidence"
+          min="1" max="5" value="3"
+          oninput="document.getElementById('edit-topic-conf-display')
+                   .textContent = this.value"
+        >
+        <span class="text-muted text-small">5</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Notes Status</label>
+      <select class="form-input" id="edit-topic-notes">
+        <option value="not_started">Not Started</option>
+        <option value="in_progress">In Progress</option>
+        <option value="done">Done</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Covered In Class</label>
+      <select class="form-input" id="edit-topic-covered">
+        <option value="false">Not Yet</option>
+        <option value="true">Yes</option>
+      </select>
+    </div>
+
+    <div id="edit-topic-error" style="
+      display:none;
+      color:#F75C5C;
+      font-size:13px;
+      margin-bottom:12px;
+    "></div>
+
+    <div class="modal-footer">
+      <button class="btn btn-danger"
+        onclick="handleDeleteTopicFromDeepDive()">
+        Delete Topic
+      </button>
+      <div class="flex gap-8">
+        <button class="btn btn-secondary"
+          onclick="closeModal('modal-edit-topic')">
+          Cancel
+        </button>
+        <button class="btn btn-primary"
+          onclick="saveEditedTopic()">
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ========================
      VIEW 1: SETUP
@@ -1520,6 +1704,7 @@ function createSubject(name, credits, testDate, currentGrade, passMark) {
     urgencyScore: 0,
     averageConfidence: 0,
     riskLevel: 'green',
+    assignmentDates: [],  // NEW — array of {id, label, date}
     topics: []
   };
 }
@@ -3232,6 +3417,653 @@ function guardDashboard() {
     return false;
   }
   return true;
+}
+
+// ============================================
+// STAGE A — EDITING + ASSIGNMENT DATES
+// ============================================
+
+// ========================
+// ASSIGNMENT DATES MODEL
+// ========================
+function createAssignmentDate(label, date) {
+  return {
+    id: generateId(),
+    label: label,
+    date: date
+  };
+}
+
+function addAssignmentToSubject(subjectId, assignment) {
+  const subject = getSubjectById(subjectId);
+  if (subject) {
+    if (!subject.assignmentDates) subject.assignmentDates = [];
+    subject.assignmentDates.push(assignment);
+    saveToStorage();
+    return true;
+  }
+  return false;
+}
+
+function deleteAssignmentFromSubject(subjectId, assignmentId) {
+  const subject = getSubjectById(subjectId);
+  if (subject && subject.assignmentDates) {
+    subject.assignmentDates = subject.assignmentDates.filter(
+      a => a.id !== assignmentId
+    );
+    saveToStorage();
+    return true;
+  }
+  return false;
+}
+
+// ========================
+// EDIT SUBJECT
+// ========================
+let editAssignments = [];
+
+function openEditSubjectModal(subjectId) {
+  const subject = getSubjectById(subjectId);
+  if (!subject) return;
+
+  document.getElementById('edit-subject-id').value      = subjectId;
+  document.getElementById('edit-subject-name').value    = subject.name;
+  document.getElementById('edit-subject-credits').value = subject.credits;
+  document.getElementById('edit-subject-testdate').value= subject.testDate || '';
+  document.getElementById('edit-subject-grade').value   =
+    subject.currentGrade !== null ? subject.currentGrade : '';
+  document.getElementById('edit-subject-passmark').value= subject.passMark || 50;
+  document.getElementById('edit-subject-error').style.display = 'none';
+
+  // Load existing assignments into temp array
+  editAssignments = subject.assignmentDates
+    ? subject.assignmentDates.map(a => ({ ...a }))
+    : [];
+
+  renderEditAssignments();
+  openModal('modal-edit-subject');
+}
+
+function addAssignmentRow() {
+  editAssignments.push({
+    id: generateId(),
+    label: '',
+    date: ''
+  });
+  renderEditAssignments();
+}
+
+function renderEditAssignments() {
+  const list  = document.getElementById('edit-assignments-list');
+  const empty = document.getElementById('edit-assignments-empty');
+
+  if (editAssignments.length === 0) {
+    list.innerHTML      = '';
+    empty.style.display = 'block';
+    return;
+  }
+
+  empty.style.display = 'none';
+
+  list.innerHTML = editAssignments.map((a, index) => `
+    <div class="card-sm flex gap-8"
+         style="align-items:center; margin-bottom:8px;">
+      <input
+        type="text"
+        class="form-input"
+        placeholder="Assignment label e.g. Assignment 1"
+        value="${a.label}"
+        oninput="editAssignments[${index}].label = this.value"
+        style="flex:1;"
+      >
+      <input
+        type="date"
+        class="form-input"
+        value="${a.date}"
+        onchange="editAssignments[${index}].date = this.value"
+        style="width:160px;"
+      >
+      <button class="btn btn-danger btn-sm"
+        onclick="removeEditAssignment(${index})">
+        ✕
+      </button>
+    </div>
+  `).join('');
+}
+
+function removeEditAssignment(index) {
+  editAssignments.splice(index, 1);
+  renderEditAssignments();
+}
+
+function saveEditedSubject() {
+  const id       = document.getElementById('edit-subject-id').value;
+  const name     = document.getElementById('edit-subject-name').value.trim();
+  const credits  = document.getElementById('edit-subject-credits').value;
+  const testDate = document.getElementById('edit-subject-testdate').value;
+  const grade    = document.getElementById('edit-subject-grade').value;
+  const passMark = document.getElementById('edit-subject-passmark').value;
+  const errorEl  = document.getElementById('edit-subject-error');
+
+  if (!name) {
+    errorEl.textContent   = 'Subject name cannot be empty.';
+    errorEl.style.display = 'block';
+    return;
+  }
+  if (!credits || isNaN(credits) || credits < 1) {
+    errorEl.textContent   = 'Please enter a valid credit value.';
+    errorEl.style.display = 'block';
+    return;
+  }
+  if (!testDate) {
+    errorEl.textContent   = 'Please select a test date.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  errorEl.style.display = 'none';
+
+  const subject = getSubjectById(id);
+  if (!subject) return;
+
+  // Apply all changes
+  subject.name         = name;
+  subject.credits      = parseInt(credits);
+  subject.testDate     = testDate;
+  subject.currentGrade = grade === '' ? null : parseFloat(grade);
+  subject.passMark     = parseFloat(passMark) || 50;
+
+  // Save valid assignments only
+  subject.assignmentDates = editAssignments.filter(
+    a => a.label.trim() && a.date
+  );
+
+  saveToStorage();
+  recalculateAndSort();
+  renderSetupSubjects();
+  renderDashboard();
+
+  closeModal('modal-edit-subject');
+  console.log('✅ Subject edited:', subject.name);
+}
+
+// ========================
+// EDIT TOPIC
+// ========================
+function openEditTopicModal(subjectId, topicId) {
+  const subject = getSubjectById(subjectId);
+  if (!subject) return;
+  const topic = subject.topics.find(t => t.id === topicId);
+  if (!topic) return;
+
+  document.getElementById('edit-topic-subject-id').value  = subjectId;
+  document.getElementById('edit-topic-id').value          = topicId;
+  document.getElementById('edit-topic-name').value        = topic.name;
+  document.getElementById('edit-topic-confidence').value  = topic.confidence;
+  document.getElementById('edit-topic-conf-display')
+    .textContent = topic.confidence;
+  document.getElementById('edit-topic-notes').value       = topic.notesStatus;
+  document.getElementById('edit-topic-covered').value     =
+    topic.coveredInClass ? 'true' : 'false';
+  document.getElementById('edit-topic-error').style.display = 'none';
+
+  openModal('modal-edit-topic');
+}
+
+function saveEditedTopic() {
+  const subjectId  = document.getElementById('edit-topic-subject-id').value;
+  const topicId    = document.getElementById('edit-topic-id').value;
+  const name       = document.getElementById('edit-topic-name').value.trim();
+  const confidence = document.getElementById('edit-topic-confidence').value;
+  const notes      = document.getElementById('edit-topic-notes').value;
+  const covered    = document.getElementById('edit-topic-covered').value;
+  const errorEl    = document.getElementById('edit-topic-error');
+
+  if (!name) {
+    errorEl.textContent   = 'Topic name cannot be empty.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  errorEl.style.display = 'none';
+
+  const subject = getSubjectById(subjectId);
+  if (!subject) return;
+  const topic = subject.topics.find(t => t.id === topicId);
+  if (!topic) return;
+
+  topic.name           = name;
+  topic.confidence     = parseInt(confidence);
+  topic.notesStatus    = notes;
+  topic.coveredInClass = covered === 'true';
+
+  saveToStorage();
+  recalculateAndSort();
+
+  const updated = getSubjectById(subjectId);
+  renderDeepDive(subjectId);
+  renderSetupSubjects();
+  renderDashboard();
+
+  closeModal('modal-edit-topic');
+  console.log('✅ Topic edited:', topic.name);
+}
+
+function handleDeleteTopicFromDeepDive() {
+  const subjectId = document.getElementById('edit-topic-subject-id').value;
+  const topicId   = document.getElementById('edit-topic-id').value;
+
+  if (confirm('Delete this topic? This cannot be undone.')) {
+    deleteTopicFromSubject(subjectId, topicId);
+    recalculateAndSort();
+    const subject = getSubjectById(subjectId);
+    renderDeepDive(subjectId);
+    renderSetupSubjects();
+    renderDashboard();
+    closeModal('modal-edit-topic');
+    console.log('🗑️ Topic deleted');
+  }
+}
+
+// ========================
+// UPDATED RENDER SETUP SUBJECTS
+// Adds edit buttons to subject cards
+// ========================
+function renderSetupSubjects() {
+  const list       = document.getElementById('setup-subjects-list');
+  const emptyState = document.getElementById('setup-empty-state');
+  const launchBtn  = document.getElementById('setup-launch-btn');
+
+  if (appData.subjects.length === 0) {
+    list.innerHTML           = '';
+    emptyState.style.display = 'block';
+    launchBtn.style.display  = 'none';
+    return;
+  }
+
+  emptyState.style.display = 'none';
+  launchBtn.style.display  =
+    appData.subjects.length >= 2 ? 'block' : 'none';
+
+  list.innerHTML = appData.subjects.map(subject => {
+    const daysText    = formatDaysText(subject.testDate);
+    const assignments = subject.assignmentDates || [];
+
+    return `
+      <div class="subject-card risk-${subject.riskLevel}"
+           style="cursor:default;">
+        <div class="subject-card-header">
+          <span class="subject-card-title">${subject.name}</span>
+          <div class="flex gap-8">
+            <button
+              class="btn btn-secondary btn-sm"
+              onclick="openAddTopicModal('${subject.id}')">
+              + Topic
+            </button>
+            <button
+              class="btn btn-secondary btn-sm"
+              onclick="openEditSubjectModal('${subject.id}')">
+              ✏️ Edit
+            </button>
+            <button
+              class="btn btn-danger btn-sm"
+              onclick="handleDeleteSubject('${subject.id}')">
+              Delete
+            </button>
+          </div>
+        </div>
+
+        <div class="subject-card-meta">
+          <div class="meta-item">
+            <span class="meta-label">Credits</span>
+            <span class="meta-value">${subject.credits}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Test Date</span>
+            <span class="meta-value">${daysText}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Grade</span>
+            <span class="meta-value">
+              ${subject.currentGrade !== null
+                ? subject.currentGrade + '%'
+                : 'Not set'}
+            </span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Topics</span>
+            <span class="meta-value">${subject.topics.length}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Urgency</span>
+            <span class="meta-value">${subject.urgencyScore}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Assignments</span>
+            <span class="meta-value">${assignments.length}</span>
+          </div>
+        </div>
+
+        ${assignments.length > 0 ? `
+          <div style="margin-top:12px; border-top:1px solid #2A2D3A;
+                      padding-top:12px;">
+            <div class="meta-label" style="margin-bottom:8px;">
+              Upcoming Assignments
+            </div>
+            ${assignments.map(a => `
+              <div class="flex-between" style="margin-bottom:4px;">
+                <span class="text-small">${a.label}</span>
+                <span class="text-small text-muted">
+                  ${formatDaysText(a.date)}
+                </span>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+
+        ${subject.topics.length > 0 ? `
+          <div style="margin-top:14px; border-top:1px solid #2A2D3A;
+                      padding-top:14px;">
+            ${subject.topics.map(topic => `
+              <div class="topic-row" style="margin-bottom:6px;">
+                <div class="topic-name">${topic.name}</div>
+                <div class="topic-controls">
+                  <div class="confidence-dots">
+                    ${[1,2,3,4,5].map(i => `
+                      <div class="confidence-dot ${
+                        i <= topic.confidence
+                          ? 'filled-' + topic.confidence
+                          : ''}">
+                      </div>
+                    `).join('')}
+                  </div>
+                  <span class="badge
+                    ${notesStatusBadgeClass(topic.notesStatus)}">
+                    ${notesStatusLabel(topic.notesStatus)}
+                  </span>
+                  <button
+                    class="btn btn-secondary btn-sm"
+                    onclick="openEditTopicModal(
+                      '${subject.id}','${topic.id}')">
+                    ✏️
+                  </button>
+                  <button
+                    class="btn btn-danger btn-sm"
+                    onclick="handleDeleteTopic(
+                      '${subject.id}','${topic.id}')">
+                    ✕
+                  </button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        ` : `
+          <p class="text-muted text-small" style="margin-top:12px;">
+            No topics yet — click "+ Topic" to add topics.
+          </p>
+        `}
+      </div>
+    `;
+  }).join('');
+}
+
+// ========================
+// UPDATED DEEP DIVE TOPICS
+// Adds edit button per topic row
+// ========================
+function renderDeepDiveTopics(subject) {
+  const el = document.getElementById('deepdive-topics-list');
+  if (!el) return;
+
+  if (!subject.topics || subject.topics.length === 0) {
+    el.innerHTML = `
+      <div class="empty-state" style="padding:40px 20px;">
+        <div class="empty-state-icon">📝</div>
+        <h3>No topics yet</h3>
+        <p>Click "+ Add Topic" to break this subject into topics.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const sorted = [...subject.topics].sort((a, b) => {
+    if (a.confidence !== b.confidence) return a.confidence - b.confidence;
+    const np = { not_started: 0, in_progress: 1, done: 2 };
+    return np[a.notesStatus] - np[b.notesStatus];
+  });
+
+  el.innerHTML = sorted.map((topic, index) => {
+    const isWeakest  = index === 0;
+    const confColour = topic.confidence <= 2 ? '#F75C5C'
+      : topic.confidence <= 3 ? '#F5A623'
+      : '#2DD4A0';
+
+    const dots = [1,2,3,4,5].map(i => `
+      <div
+        class="confidence-dot ${
+          i <= topic.confidence ? 'filled-' + topic.confidence : ''}"
+        onclick="handleTopicConfidenceClick(
+          '${subject.id}','${topic.id}',${i})"
+        title="Set confidence to ${i}"
+        style="cursor:pointer; width:12px; height:12px;">
+      </div>
+    `).join('');
+
+    return `
+      <div class="topic-row" id="topic-row-${topic.id}">
+        <div style="flex:1; display:flex;
+                    align-items:center; gap:10px;">
+          ${isWeakest
+            ? '<span class="badge badge-red" style="font-size:9px;">Weakest</span>'
+            : ''}
+          <div class="topic-name">${topic.name}</div>
+        </div>
+
+        <div class="topic-controls">
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <span class="text-small text-muted"
+                  style="font-size:9px; text-align:center;">
+              CONFIDENCE
+            </span>
+            <div class="confidence-dots">${dots}</div>
+          </div>
+
+          <span style="font-size:16px; font-weight:700;
+                       color:${confColour}; min-width:28px;
+                       text-align:center;"
+                id="conf-val-${topic.id}">
+            ${topic.confidence}/5
+          </span>
+
+          <button
+            class="badge ${notesStatusBadgeClass(topic.notesStatus)}"
+            style="cursor:pointer; border:none;"
+            onclick="handleNotesToggle('${subject.id}','${topic.id}')"
+            title="Click to cycle notes status">
+            ${notesStatusLabel(topic.notesStatus)}
+          </button>
+
+          <button
+            class="btn btn-secondary btn-sm"
+            onclick="openEditTopicModal('${subject.id}','${topic.id}')">
+            ✏️ Edit
+          </button>
+
+          <button
+            class="btn btn-success btn-sm"
+            onclick="handleMarkRevised('${subject.id}','${topic.id}')"
+            ${topic.confidence >= 5
+              ? 'disabled style="opacity:0.4;"' : ''}>
+            ${topic.confidence >= 5 ? '✓ Mastered' : '↑ Revised'}
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ========================
+// UPDATED TIMELINE
+// Now includes assignment dates alongside test dates
+// ========================
+function renderTimeline() {
+  const el = document.getElementById('dashboard-timeline');
+  if (!el) return;
+
+  el.innerHTML = '<div class="timeline-line"></div>';
+
+  // Build unified event list from test dates + assignment dates
+  let events = [];
+
+  appData.subjects.forEach(subject => {
+    if (subject.testDate) {
+      events.push({
+        label:  subject.name,
+        date:   subject.testDate,
+        colour: { red:'#F75C5C', amber:'#F5A623',
+                  green:'#2DD4A0' }[subject.riskLevel] || '#4F8EF7',
+        type:   'test',
+        shape:  'circle'
+      });
+    }
+    if (subject.assignmentDates) {
+      subject.assignmentDates.forEach(a => {
+        if (a.date) {
+          events.push({
+            label:  a.label || 'Assignment',
+            date:   a.date,
+            colour: '#4F8EF7',
+            type:   'assignment',
+            shape:  'diamond'
+          });
+        }
+      });
+    }
+  });
+
+  if (events.length === 0) {
+    el.innerHTML = `
+      <div class="timeline-line"></div>
+      <p class="text-muted text-small"
+         style="padding-top:30px; text-align:center;">
+        Add test dates to see your semester timeline
+      </p>
+    `;
+    return;
+  }
+
+  // Sort by date
+  events.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  const timestamps = events.map(e => new Date(e.date).getTime());
+  const minDate    = Math.min(...timestamps);
+  const maxDate    = Math.max(...timestamps);
+  const range      = maxDate - minDate || 1;
+
+  // Calculate positions with minimum gap enforcement
+  const positions = events.map(e => {
+    const t = new Date(e.date).getTime();
+    return events.length === 1
+      ? 50
+      : 5 + ((t - minDate) / range) * 90;
+  });
+
+  const MIN_GAP = 11;
+  for (let i = 1; i < positions.length; i++) {
+    if (positions[i] - positions[i - 1] < MIN_GAP) {
+      positions[i] = positions[i - 1] + MIN_GAP;
+    }
+  }
+  for (let i = 0; i < positions.length; i++) {
+    positions[i] = Math.min(positions[i], 95);
+  }
+
+  events.forEach((event, index) => {
+    const days     = getDaysUntilTest(event.date);
+    const daysText = days === null ? ''
+      : days <= 0  ? 'Today'
+      : days === 1 ? '1d'
+      : days + 'd';
+
+    const isTop  = index % 2 === 0;
+
+    // Diamond shape for assignments, circle for tests
+    const dotHTML = event.shape === 'diamond'
+      ? `<div style="
+           width:10px; height:10px;
+           background:${event.colour};
+           border:2px solid #0F1117;
+           transform:rotate(45deg);
+           flex-shrink:0;
+         "></div>`
+      : `<div style="
+           width:12px; height:12px;
+           border-radius:50%;
+           background:${event.colour};
+           border:2px solid #0F1117;
+           flex-shrink:0;
+         "></div>`;
+
+    const typeLabel = event.type === 'assignment'
+      ? `<div style="font-size:8px; color:#4F8EF7;
+                     text-align:center;">assign</div>`
+      : '';
+
+    const marker = document.createElement('div');
+    marker.style.cssText = `
+      position: absolute;
+      left: ${positions[index]}%;
+      top: 0;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 90px;
+    `;
+
+    if (isTop) {
+      marker.innerHTML = `
+        <div style="font-size:10px; font-weight:700;
+                    color:${event.colour}; white-space:nowrap;
+                    text-align:center; margin-bottom:2px;
+                    max-width:88px; overflow:hidden;
+                    text-overflow:ellipsis;">
+          ${event.label}
+        </div>
+        ${typeLabel}
+        <div style="font-size:9px; color:#8B8FA8;
+                    text-align:center; margin-bottom:2px;">
+          ${daysText}
+        </div>
+        <div style="width:2px; height:8px;
+                    background:${event.colour}; opacity:0.4;">
+        </div>
+        ${dotHTML}
+      `;
+    } else {
+      marker.innerHTML = `
+        <div style="height:42px;"></div>
+        ${dotHTML}
+        <div style="width:2px; height:8px;
+                    background:${event.colour}; opacity:0.4;">
+        </div>
+        ${typeLabel}
+        <div style="font-size:10px; font-weight:700;
+                    color:${event.colour}; white-space:nowrap;
+                    text-align:center; margin-top:2px;
+                    max-width:88px; overflow:hidden;
+                    text-overflow:ellipsis;">
+          ${event.label}
+        </div>
+        <div style="font-size:9px; color:#8B8FA8;
+                    text-align:center; margin-top:1px;">
+          ${daysText}
+        </div>
+      `;
+    }
+
+    el.appendChild(marker);
+  });
 }
 </script>
 
