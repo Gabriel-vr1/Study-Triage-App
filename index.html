@@ -524,13 +524,13 @@ select.form-input {
 
 .timeline-track {
   position: relative;
-  height: 80px;
-  min-width: 600px;
+  height: 110px;
+  min-width: 500px;
 }
 
 .timeline-line {
   position: absolute;
-  top: 20px;
+  top: 40px;
   left: 0;
   right: 0;
   height: 2px;
@@ -2545,7 +2545,7 @@ function renderTimeline() {
   if (subjectsWithDates.length === 0) {
     el.innerHTML = `
       <div class="timeline-line"></div>
-      <p class="text-muted text-small" 
+      <p class="text-muted text-small"
          style="padding-top:30px; text-align:center;">
         Add test dates to see your semester timeline
       </p>
@@ -2553,7 +2553,7 @@ function renderTimeline() {
     return;
   }
 
-  // Sort by date so labels don't randomly overlap
+  // Sort by date earliest first
   const sorted = [...subjectsWithDates].sort((a, b) =>
     new Date(a.testDate) - new Date(b.testDate)
   );
@@ -2567,53 +2567,111 @@ function renderTimeline() {
     red: '#F75C5C', amber: '#F5A623', green: '#2DD4A0'
   };
 
-  // Alternate label position up/down to prevent overlap
-  sorted.forEach((subject, index) => {
-    const date     = new Date(subject.testDate).getTime();
-    const position = sorted.length === 1
+  // Calculate raw positions first
+  const positions = sorted.map(subject => {
+    const date = new Date(subject.testDate).getTime();
+    return sorted.length === 1
       ? 50
       : 5 + ((date - minDate) / range) * 90;
+  });
 
+  // Enforce minimum gap of 12% between markers
+  // Push markers apart if they are too close
+  const MIN_GAP = 12;
+  for (let i = 1; i < positions.length; i++) {
+    if (positions[i] - positions[i - 1] < MIN_GAP) {
+      positions[i] = positions[i - 1] + MIN_GAP;
+    }
+  }
+
+  // Cap at 95% max
+  for (let i = 0; i < positions.length; i++) {
+    positions[i] = Math.min(positions[i], 95);
+  }
+
+  sorted.forEach((subject, index) => {
     const colour   = colourMap[subject.riskLevel] || '#4F8EF7';
     const days     = getDaysUntilTest(subject.testDate);
     const daysText = days === null ? ''
-      : days <= 0 ? 'Today'
+      : days <= 0  ? 'Today'
       : days === 1 ? '1d'
       : days + 'd';
 
-    // Alternate: even index labels go above line, odd go below
-    const isAbove  = index % 2 === 0;
-    const topVal   = isAbove ? '0px' : '32px';
-    const labelTop = isAbove ? '-22px' : '46px';
+    // Alternate rows: even = top row, odd = bottom row
+    const isTop  = index % 2 === 0;
 
-    const marker   = document.createElement('div');
-    marker.className = 'timeline-marker';
+    const marker = document.createElement('div');
     marker.style.cssText = `
-      left: ${position}%; 
-      top: ${topVal};
       position: absolute;
+      left: ${positions[index]}%;
+      top: 0;
       transform: translateX(-50%);
       display: flex;
       flex-direction: column;
       align-items: center;
+      width: 90px;
     `;
 
-    marker.innerHTML = `
-      <div style="
-        width:12px; height:12px; border-radius:50%;
-        background:${colour}; border:2px solid #0F1117;
-        margin-top:14px; flex-shrink:0;
-      "></div>
-      <div style="
-        font-size:10px; font-weight:600; color:${colour};
-        white-space:nowrap; margin-top:4px; text-align:center;
-        max-width:90px; overflow:hidden; text-overflow:ellipsis;
-      ">${subject.name}</div>
-      <div style="
-        font-size:9px; color:#8B8FA8; 
-        text-align:center; margin-top:1px;
-      ">${daysText}</div>
-    `;
+    if (isTop) {
+      // Label above the line
+      marker.innerHTML = `
+        <div style="
+          font-size:10px; font-weight:700;
+          color:${colour};
+          white-space:nowrap;
+          text-align:center;
+          margin-bottom:3px;
+          max-width:90px;
+          overflow:hidden;
+          text-overflow:ellipsis;
+        ">${subject.name}</div>
+        <div style="
+          font-size:9px; color:#8B8FA8;
+          text-align:center; margin-bottom:3px;
+        ">${daysText}</div>
+        <div style="
+          width:2px; height:10px;
+          background:${colour}; opacity:0.4;
+        "></div>
+        <div style="
+          width:12px; height:12px;
+          border-radius:50%;
+          background:${colour};
+          border:2px solid #0F1117;
+          flex-shrink:0;
+        "></div>
+      `;
+    } else {
+      // Label below the line
+      marker.innerHTML = `
+        <div style="height:40px;"></div>
+        <div style="
+          width:12px; height:12px;
+          border-radius:50%;
+          background:${colour};
+          border:2px solid #0F1117;
+          flex-shrink:0;
+        "></div>
+        <div style="
+          width:2px; height:10px;
+          background:${colour}; opacity:0.4;
+        "></div>
+        <div style="
+          font-size:10px; font-weight:700;
+          color:${colour};
+          white-space:nowrap;
+          text-align:center;
+          margin-top:3px;
+          max-width:90px;
+          overflow:hidden;
+          text-overflow:ellipsis;
+        ">${subject.name}</div>
+        <div style="
+          font-size:9px; color:#8B8FA8;
+          text-align:center; margin-top:2px;
+        ">${daysText}</div>
+      `;
+    }
 
     el.appendChild(marker);
   });
