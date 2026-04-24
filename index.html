@@ -402,7 +402,7 @@ select.form-input option { background:#0E1220; }
 .setup-progress-fill { height:100%; background:linear-gradient(90deg,var(--blue),var(--green)); border-radius:2px; transition:width 0.5s ease; }
 
 /* ========================
-   TRANSPARENCY
+   TRANSPARENCY — UPDATED STYLES
 ======================== */
 .transparency-block {
   background:rgba(14,18,32,0.9); border:1px solid var(--border); border-radius:14px;
@@ -411,6 +411,37 @@ select.form-input option { background:#0E1220; }
 .transparency-block:hover { border-color:rgba(79,142,247,0.2); }
 .transparency-block h3 { font-size:15px; font-weight:700; color:var(--blue); margin-bottom:12px; }
 .transparency-block p { font-size:14px; color:var(--muted); line-height:1.75; }
+
+/* Inline rejected / accepted tags for transparency */
+.t-tag {
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.8px;
+  padding:2px 8px; border-radius:20px; font-family:var(--mono); margin-right:4px;
+}
+.t-tag-reject { background:rgba(247,92,92,0.12); color:var(--red); border:1px solid rgba(247,92,92,0.25); }
+.t-tag-accept { background:rgba(45,212,160,0.12); color:var(--green); border:1px solid rgba(45,212,160,0.25); }
+.t-tag-modified { background:rgba(245,166,35,0.12); color:var(--amber); border:1px solid rgba(245,166,35,0.25); }
+
+/* Decision table */
+.decision-table { width:100%; border-collapse:collapse; margin-top:14px; }
+.decision-table th {
+  font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:1px;
+  color:var(--muted); font-family:var(--mono); padding:8px 12px; text-align:left;
+  border-bottom:1px solid var(--border-2);
+}
+.decision-table td { font-size:13px; color:var(--muted); padding:10px 12px; border-bottom:1px solid var(--border); vertical-align:top; line-height:1.6; }
+.decision-table td:first-child { color:var(--text); font-weight:600; }
+.decision-table tr:last-child td { border-bottom:none; }
+.decision-table tr:hover td { background:rgba(79,142,247,0.03); }
+
+/* AI prompt examples */
+.prompt-example {
+  background:rgba(8,11,20,0.95); border:1px solid var(--border-2);
+  border-left:3px solid var(--blue); border-radius:0 8px 8px 0;
+  padding:12px 16px; margin:10px 0; font-family:var(--mono); font-size:12px; color:var(--blue);
+  line-height:1.7;
+}
+.prompt-label { font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:var(--muted); margin-bottom:4px; font-family:var(--mono); }
 
 /* ========================
    DEEP DIVE BACK HINT
@@ -1012,7 +1043,7 @@ select.form-input option { background:#0E1220; }
 </div>
 
 <!-- ============================================================
-     VIEW 4: TRANSPARENCY
+     VIEW 4: TRANSPARENCY — UPDATED
 ============================================================ -->
 <div id="view-transparency" class="view">
   <nav class="navbar">
@@ -1028,36 +1059,124 @@ select.form-input option { background:#0E1220; }
   <div class="page-container">
     <div class="page-header">
       <h1>AI Transparency Report</h1>
-      <p>How AI was used, what it suggested, and what decisions were made independently by the student.</p>
+      <p>How I used AI, what it suggested, what I changed, and what I decided on my own.</p>
     </div>
+
+    <!-- OVERVIEW -->
     <div class="transparency-block">
       <h3>📋 Overview</h3>
-      <p>Study Triage was built as part of the BET Software Classroom CRASH 2026 competition. The challenge required using an AI tool as an assistant to design and build a simple application that helps a first-year student manage their studies more effectively. AI was used throughout the planning and design process as a thinking partner — not as a code generator. Every formula, every weighting decision, and every feature included in this application was interrogated, modified, and owned by the student before implementation.</p>
+      <p>I built Study Triage for the BET Software CRASH 2026 competition. The brief required using AI as an assistant — not as the main builder. That is exactly how I treated it. I used AI to explore ideas and challenge my thinking, but every final decision about what to build, how it works, and why it looks the way it does was mine.</p>
+      <p style="margin-top:12px;">This report is honest. It shows the prompts I actually used, the suggestions I rejected, and the places where I disagreed with AI and went my own way.</p>
     </div>
+
+    <!-- STEP 1 -->
     <div class="transparency-block">
       <h3>🔍 Step 1 — Problem Identification</h3>
-      <p>The student began by identifying real problems first-year university students face rather than jumping directly to a solution. AI was used to brainstorm a broad list of pain points across time management, academic performance, mental load, and study habits. The student then selected the problems that felt most genuine and impactful: not knowing what to study next, studying easy content instead of weak areas, having no big picture view of the semester, and not knowing whether they are actually ready for a test. The AI suggested social and environmental problems such as group project coordination, but the student independently rejected these because the single HTML file format with no network access made them impossible to implement meaningfully.</p>
+      <p>I started with real problems, not a solution. I used AI to brainstorm what first-year students actually struggle with across time management, academic performance, and mental load.</p>
+      <div class="prompt-label" style="margin-top:14px;">Prompt I used</div>
+      <div class="prompt-example">"What are the most common reasons first-year university students fail or underperform academically? Give me a broad list."</div>
+      <p style="margin-top:12px;">From the list AI gave me, I picked the problems that felt most genuine and that I could actually solve in a single HTML file:</p>
+      <ul style="margin-top:10px;padding-left:18px;display:flex;flex-direction:column;gap:6px;color:var(--muted);font-size:14px;line-height:1.7;">
+        <li>Not knowing what to study next</li>
+        <li>Studying easy topics instead of weak ones</li>
+        <li>No big picture view of the whole semester</li>
+        <li>Not knowing whether you are actually ready for a test</li>
+      </ul>
+      <p style="margin-top:12px;">AI also suggested group coordination and peer accountability features. <span class="t-tag t-tag-reject">Rejected</span> — no network access in a single HTML file, so those would have been fake features.</p>
     </div>
+
+    <!-- STEP 2 -->
     <div class="transparency-block">
-      <h3>💡 Step 2 — Concept Development</h3>
-      <p>AI proposed four application categories: a smart priority engine, an exam week scheduler, a sorting algorithm visualiser, and a subject health dashboard. The student chose to combine the priority engine logic with the dashboard format — using the dashboard as the visual shell and the urgency score engine as the brain. The AI also suggested a simpler "ranked list" approach focused only on outputting a sorted task list. The student rejected this because it would not score well on GUI look and feel and would not be visually distinctive from other submissions. The student independently decided that the application needed three connected views — setup, dashboard, and deep dive — so that the sorting algorithm would be meaningful at multiple levels of detail.</p>
+      <h3>💡 Step 2 — Concept Decision</h3>
+      <p>I asked AI to suggest application categories I could build. It gave me four directions:</p>
+      <table class="decision-table" style="margin-top:14px;">
+        <thead><tr><th>AI Suggestion</th><th>My Decision</th><th>Reason</th></tr></thead>
+        <tbody>
+          <tr><td>Priority engine (ranked task list)</td><td><span class="t-tag t-tag-modified">Modified</span></td><td>Used the scoring logic but rejected the plain list output — would not stand out visually or score well on GUI marks</td></tr>
+          <tr><td>Exam week scheduler</td><td><span class="t-tag t-tag-reject">Rejected</span></td><td>Scheduling without real calendar access felt shallow</td></tr>
+          <tr><td>Sorting algorithm visualiser</td><td><span class="t-tag t-tag-modified">Modified</span></td><td>Kept the sorting idea but embedded it inside the app logic instead of making it the main feature</td></tr>
+          <tr><td>Subject health dashboard</td><td><span class="t-tag t-tag-accept">Accepted</span></td><td>Used as the visual shell — the dashboard format communicates risk clearly at a glance</td></tr>
+        </tbody>
+      </table>
+      <p style="margin-top:14px;">My final concept combined the dashboard with the urgency score engine as the brain behind it. I also independently decided to structure the app into three connected views — setup, dashboard, deep dive — so the sorting algorithm is visible at multiple levels of detail, not just hidden in the background.</p>
     </div>
+
+    <!-- STEP 3 -->
     <div class="transparency-block">
       <h3>⚙️ Step 3 — The Urgency Score Formula</h3>
-      <p>The urgency score formula is the core intellectual contribution of this application. AI was used to identify relevant factors that should influence academic risk: time until test, subject importance, student confidence, and current grade. The student made all weighting decisions independently. Days until test was assigned 40% weight because proximity to a test is the most time-sensitive factor. Topic confidence was assigned 25% because it most directly reflects whether a student is prepared for the content. Credit value was assigned 20% because higher credit subjects carry more academic consequence. Grade risk was assigned 15% as a supporting signal. The AI initially described the time component as "exponential decay." The student identified this as inaccurate and corrected it to urgency bands with sharply increasing risk near the test date, which is both more honest and easier to defend.</p>
+      <p>This is the core intellectual contribution of the app. AI helped me identify relevant factors. I decided how they are weighted and why.</p>
+      <div class="prompt-label" style="margin-top:14px;">Prompt I used</div>
+      <div class="prompt-example">"What factors should influence how urgently a student needs to study a subject? List them and suggest how they might be weighted."</div>
+      <p style="margin-top:12px;">AI suggested factors and proposed weighting them equally. <span class="t-tag t-tag-reject">Rejected</span> — equal weighting ignores that some factors are more time-sensitive than others. I made all weight decisions independently:</p>
+      <table class="decision-table" style="margin-top:14px;">
+        <thead><tr><th>Factor</th><th>My Weight</th><th>My Reasoning</th></tr></thead>
+        <tbody>
+          <tr><td>Days until test</td><td style="color:var(--blue);font-family:var(--mono);font-weight:700;">40%</td><td>Proximity to a deadline creates real pressure. This should dominate.</td></tr>
+          <tr><td>Topic confidence</td><td style="color:var(--blue);font-family:var(--mono);font-weight:700;">25%</td><td>Reflects actual understanding — the most direct measure of being prepared.</td></tr>
+          <tr><td>Credit value</td><td style="color:var(--blue);font-family:var(--mono);font-weight:700;">20%</td><td>Higher credit subjects carry bigger academic consequences if failed.</td></tr>
+          <tr><td>Grade risk</td><td style="color:var(--blue);font-family:var(--mono);font-weight:700;">15%</td><td>Useful signal, but less immediate than time and confidence.</td></tr>
+        </tbody>
+      </table>
+      <p style="margin-top:14px;">AI originally described the time component using the phrase "exponential decay." <span class="t-tag t-tag-reject">Rejected</span> — I corrected this to urgency bands with sharply increasing risk near the test date. It is more honest and easier to explain and defend.</p>
     </div>
+
+    <!-- STEP 4 -->
     <div class="transparency-block">
       <h3>🔢 Step 4 — Sorting Algorithm Choice</h3>
-      <p>The student selected insertion sort after evaluating it against alternatives. AI confirmed that insertion sort is appropriate for small datasets, is stable, and produces a readable comparator function that judges can follow. The student independently decided that the sort should run visibly on a recalculate action rather than silently in the background, because the rubric specifically scores sorting algorithm implementation and the sort needed to be demonstrable. The sort was hand-written without using JavaScript's built-in array.sort() method, ensuring full transparency of the algorithm logic. The comparator used is the urgency score, which means every sort decision is traceable back to the four-component formula.</p>
+      <p>I chose insertion sort after asking AI to compare options for this use case.</p>
+      <div class="prompt-label" style="margin-top:14px;">Prompt I used</div>
+      <div class="prompt-example">"Compare insertion sort, selection sort, and bubble sort for sorting a small list of 5–15 items by a numeric score. Which is most appropriate and why?"</div>
+      <p style="margin-top:12px;">AI confirmed insertion sort is appropriate for small datasets, is stable, and produces a comparator function that is easy to follow. I made two additional decisions independently:</p>
+      <ul style="margin-top:10px;padding-left:18px;display:flex;flex-direction:column;gap:8px;color:var(--muted);font-size:14px;line-height:1.7;">
+        <li><strong style="color:var(--text);">Write the algorithm manually</strong> — no built-in <span style="font-family:var(--mono);color:var(--blue);">array.sort()</span>. The algorithm needed to be visible and demonstrable, not hidden behind a library call.</li>
+        <li><strong style="color:var(--text);">Make the sort visible</strong> — triggered by the Recalculate button so judges can see it run, not silently in the background on every change.</li>
+      </ul>
+      <p style="margin-top:12px;">Every sort decision is traceable back to the urgency score, which is traceable back to the four-component formula.</p>
     </div>
+
+    <!-- STEP 5 -->
     <div class="transparency-block">
-      <h3>🎨 Step 5 — Design and UI Decisions</h3>
-      <p>AI suggested keeping the visual design minimal to reduce complexity. The student disagreed and chose a dark dashboard aesthetic with colour-coded risk indicators, a score breakdown view, and a semester timeline. This decision was made because GUI look and feel accounts for 10 out of 30 available marks, and a plain ranked list would not score near the maximum. The colour system — red for critical, amber for watch, green for on track — was chosen because it mirrors real-world risk dashboards and is immediately readable without explanation. The student chose to include a score breakdown panel in the deep dive view so that the urgency formula is visible and transparent to both the user and the judges.</p>
+      <h3>🎨 Step 5 — Visual Design Decisions</h3>
+      <p>AI suggested keeping the UI minimal to reduce complexity. <span class="t-tag t-tag-reject">Rejected</span>. GUI look and feel is 10 out of 30 available marks. A plain ranked list would not score near the maximum.</p>
+      <div class="prompt-label" style="margin-top:14px;">Prompt I used</div>
+      <div class="prompt-example">"I want a dark dashboard aesthetic with animated background elements, floating UI nodes, and a colour-coded risk system. Help me design the CSS variables and visual system for this."</div>
+      <p style="margin-top:12px;">I directed the visual style. AI helped implement it. Key design decisions that were mine:</p>
+      <table class="decision-table" style="margin-top:14px;">
+        <thead><tr><th>Decision</th><th>Why I Made It</th></tr></thead>
+        <tbody>
+          <tr><td>Red / amber / green risk system</td><td>Mirrors real-world risk dashboards. Readable without explanation.</td></tr>
+          <tr><td>Animated background orbs, orbit rings, particle effects</td><td>Raises visual quality. I specifically prompted for these elements and iterated on them.</td></tr>
+          <tr><td>Floating data nodes on the welcome screen</td><td>My idea — shows the type of data the app works with before the user even starts.</td></tr>
+          <tr><td>Score breakdown panel in deep dive</td><td>Makes the urgency formula visible to users and judges. Transparency by design.</td></tr>
+          <tr><td>Semester timeline</td><td>AI suggested it was optional. I kept it — it adds real value to the dashboard view.</td></tr>
+          <tr><td>Study tips ticker</td><td>My addition. Adds life to the interface and gives the app a sense of purpose beyond just data.</td></tr>
+        </tbody>
+      </table>
+      <p style="margin-top:14px;">I also used AI heavily during the styling phase, prompting specifically for visual details like the gradient text effects, the animated border on the recommendation box, the corner tick marks, and the geometric accent shapes. I reviewed every piece of CSS and adjusted values until the result matched what I had in mind.</p>
     </div>
+
+    <!-- STEP 6 -->
     <div class="transparency-block">
-      <h3>🚫 Step 6 — What AI Did Not Do</h3>
-      <p>AI did not independently choose the application concept. AI did not determine the formula weights. AI did not decide which features to include or exclude. AI did not write the final code without student direction at each stage. Every stage of development was initiated by the student with a specific goal, and AI output was reviewed, questioned, and modified before being accepted. In several cases — the exponential language correction, the rejection of the minimal ranked list approach, the inclusion of the timeline despite AI suggesting it was optional — the student overruled AI suggestions based on independent judgment.</p>
+      <h3>🚫 Step 6 — What AI Did NOT Do</h3>
+      <p style="margin-bottom:14px;">Being specific about this matters. AI did not:</p>
+      <ul style="padding-left:18px;display:flex;flex-direction:column;gap:8px;color:var(--muted);font-size:14px;line-height:1.7;">
+        <li>Choose the application concept</li>
+        <li>Decide the formula weights</li>
+        <li>Decide which features to include or cut</li>
+        <li>Choose the visual aesthetic</li>
+        <li>Write code without me directing each stage and reviewing the output</li>
+      </ul>
+      <p style="margin-top:14px;">In several specific cases I directly overruled AI suggestions:</p>
+      <ul style="margin-top:10px;padding-left:18px;display:flex;flex-direction:column;gap:8px;color:var(--muted);font-size:14px;line-height:1.7;">
+        <li>Rejected the minimal ranked-list approach in favour of a full dashboard</li>
+        <li>Corrected the "exponential decay" description to urgency bands</li>
+        <li>Kept the semester timeline after AI suggested removing it</li>
+        <li>Added the study tips ticker without AI suggesting it</li>
+        <li>Chose equal-weight rejection and set my own formula weights</li>
+      </ul>
     </div>
+
+    <!-- FORMULA REFERENCE -->
     <div class="transparency-block">
       <h3>📐 Formula Reference</h3>
       <p style="margin-bottom:16px;">The urgency score formula for reference:</p>
@@ -1070,10 +1189,15 @@ select.form-input option { background:#0E1220; }
         <span style="color:var(--green);">Result: 0–100 &nbsp;|&nbsp; 75–100 = Critical &nbsp;|&nbsp; 45–74 = Watch &nbsp;|&nbsp; 0–44 = On Track</span>
       </div>
     </div>
+
+    <!-- FINAL STATEMENT -->
     <div class="transparency-block" style="border-color:rgba(79,142,247,0.3);background:rgba(79,142,247,0.05);">
-      <h3>✅ Student Declaration</h3>
-      <p>I used AI as a design and thinking partner throughout this project. I asked questions, challenged its suggestions, rejected ideas that did not serve the brief, and made all final decisions independently. The urgency formula weights, the feature set, the sorting algorithm choice, and the visual design direction were all my own decisions. The code was written with AI assistance at each stage, but every line was reviewed and understood before inclusion. This application represents my own thinking about a real problem, built with AI as a tool — not as a replacement for judgment.</p>
+      <h3>✅ Final Statement</h3>
+      <p>I used AI as a tool to think better, not to replace thinking. I asked questions, challenged suggestions, rejected ideas that did not fit the brief, and made all final decisions myself.</p>
+      <p style="margin-top:12px;">The urgency formula weights, the three-view structure, the visual design direction, and the decision to write insertion sort by hand were all my own choices. AI helped me explore options at each stage — but I decided what stayed and what did not.</p>
+      <p style="margin-top:12px;">This project reflects how I think about a real problem, built with AI as a tool, not as a replacement for judgment.</p>
     </div>
+
     <div style="text-align:center;padding:32px 0 52px;color:var(--muted);font-size:12px;border-top:1px solid var(--border);margin-top:8px;font-family:var(--mono);">
       Study Triage · BET CRASH 2026 · Built with purpose
     </div>
