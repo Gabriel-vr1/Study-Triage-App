@@ -27,6 +27,10 @@ Subjects are then ranked using a custom sorting algorithm, allowing students to 
 2. Open `index.html`
 3. Double-click to run locally in your browser
 
+## Live Demo
+
+https://gabriel-vr1.github.io/Study-Triage-App/
+
 No setup or installation required.
 
 ## Project Context
